@@ -15,8 +15,10 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // routes import
+import authRouter from "./routes/auth.route.js";
 
 // routes define
+app.use("/api/v1/auth", authRouter);
 
 // global error handler - one last middleware
 app.use(errorMiddleware);
