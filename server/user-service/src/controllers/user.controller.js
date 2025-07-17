@@ -30,15 +30,15 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
     const { firstName, lastName } = req.body;
 
     let avatarLocalPath = req.file?.buffer;
-    if (!avatarLocalPath) throw new ApiError(400, "avatar file is missing");
+    // if (!avatarLocalPath) throw new ApiError(400, "avatar file is missing");
 
     const avatar = await uploadOnCloudinary(avatarLocalPath);
-    if (!avatar?.url)
-        throw new ApiError(401, "error while uploading on avatar");
+    // if (!avatar?.url)
+    //     throw new ApiError(401, "error while uploading on avatar");
 
     const existedUser = await User.findOneAndUpdate(
         { userId: req.user?._id },
-        { $set: { firstName, lastName, avatar: avatar.url } },
+        { $set: { firstName, lastName, avatar: avatar?.url || "" } },
         { new: true }
     );
 

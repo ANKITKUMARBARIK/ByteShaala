@@ -8,7 +8,6 @@ export const handleAuthAccountCreate = async (data) => {
             userId,
             firstName,
             lastName,
-            avatar: `${req.protocol}://${req.get("host")}/images/default.png`,
         });
 
         await user.save();
