@@ -1,7 +1,7 @@
 import amqplib from "amqplib";
 import {
-    handleUserPasswordChangedEvent,
-    handleUserDeletedEvent,
+    handleAuthAccountCreate,
+    handlePasswordChangeResponse,
 } from "./handlers.js";
 
 let channel;
@@ -12,34 +12,41 @@ export const connectRabbitMQ = async () => {
         connection = await amqplib.connect(process.env.RABBITMQ_URL);
         channel = await connection.createChannel();
 
-        // Auth Service publish auth_exchange to User Service
-        await channel.assertExchange("auth_exchange", "topic", {
-            durable: false,
-        });
-        console.log("✅ Connected to RabbitMQ (Auth Service)");
-
-        // Auth Service consumes from user_exchange
+        // User Service publish user_exchange to Auth Service
         await channel.assertExchange("user_exchange", "topic", {
             durable: false,
         });
-        const { queue } = await channel.assertQueue("auth-service-queue");
+        console.log("✅ Connected to RabbitMQ (User Service)");
 
+        // User Service consumes from auth_exchange
+        await channel.assertExchange("auth_exchange", "topic", {
+            durable: false,
+        });
+        const { queue } = await channel.assertQueue("user-service-queue");
+
+        await channel.bindQueue(queue, "auth_exchange", "auth.account.create");
         await channel.bindQueue(
             queue,
-            "user_exchange",
-            "user.password.changed"
+            "auth_exchange",
+            "auth.password.changed.success"
         );
-        await channel.bindQueue(queue, "user_exchange", "user.deleted");
+        await channel.bindQueue(
+            queue,
+            "auth_exchange",
+            "auth.password.changed.failed"
+        );
 
         channel.consume(queue, async (msg) => {
             try {
                 const data = JSON.parse(msg.content.toString());
                 const key = msg.fields.routingKey;
 
-                if (key === "user.password.changed") {
-                    await handleUserPasswordChangedEvent(data);
-                } else if (key === "user.deleted") {
-                    await handleUserDeletedEvent(data);
+                if (key === "auth.account.create") {
+                    await handleAuthAccountCreate(data);
+                } else if (key === "auth.password.changed.success") {
+                    await handlePasswordChangeResponse(data, key);
+                } else if (key === "auth.password.changed.failed") {
+                    await handlePasswordChangeResponse(data, key);
                 } else {
                     console.log("⚠️ Unknown routing key:", key);
                 }
