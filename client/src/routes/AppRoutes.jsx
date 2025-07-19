@@ -1,20 +1,16 @@
+import AdminLayout from "@/layouts/AdminLayout";
+import AuthLayout from "@/layouts/AuthLayout";
+import MainLayout from "@/layouts/MainLayout";
+import AdminPage from "@/pages/admin";
+import CourseDetailPage from "@/pages/courseDetail";
+import CoursesPage from "@/pages/courses";
+import LoginPage from "@/pages/login";
+import ProfilePage from "@/pages/profile";
+import RegisterPage from "@/pages/register";
 import { useSelector } from "react-redux";
 import { useRoutes } from "react-router-dom";
 
-// Pages
-import AdminLayout from "../layouts/AdminLayout";
-import AuthLayout from "../layouts/AuthLayout";
-import MainLayout from "../layouts/MainLayout";
-import AdminPage from "../pages/admin";
-import CourseDetailPage from "../pages/courseDetail";
-import CoursesPage from "../pages/courses";
-import LoginPage from "../pages/login";
-import ProfilePage from "../pages/profile";
-import RegisterPage from "../pages/register";
-
-// Layouts
-
-export default function Routes() {
+export default function AppRoutes() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const isAdmin = isAuthenticated && user?.role === "admin";
 
