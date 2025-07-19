@@ -1,15 +1,8 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { SignupForm } from "@/components/auth/signup-form";
 
 const RegisterPage = () => {
-  const navigate = useNavigate();
-  return (
-    <div>
-      Register Page
-      <br />
-      <button onClick={() => navigate("/login")}>login</button>
-    </div>
-  );
+  return <SignupForm />;
 };
 
 export default RegisterPage;
