@@ -1,0 +1,313 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --radius: 0.625rem;
+
+  --background: 224 71% 4%;
+  --foreground: 210 40% 98%;
+  --gradient-background: radial-gradient(circle at center, hsl(224 71% 10%), hsl(224 84% 2%));
+
+  --card: 0 0% 100%;
+  --card-foreground: 224 71.4% 4.1%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 71.4% 4.1%;
+
+  --primary: 220.9 39.3% 11%;
+  --primary-foreground: 210 20% 98%;
+
+  --secondary: 220 14.3% 95.9%;
+  --secondary-foreground: 220.9 39.3% 11%;
+
+  --muted: 220 14.3% 95.9%;
+  --muted-foreground: 220 8.9% 46.1%;
+
+  --accent: 220 14.3% 95.9%;
+  --accent-foreground: 220.9 39.3% 11%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 20% 98%;
+
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 224 71.4% 4.1%;
+
+  --radius: 0.5rem;
+
+  /* === YOUR CUSTOM THEME COLORS === */
+  /* Main App Colors */
+  --app-bg: 0 0% 100%;              /* Main background - white */
+  --app-text: 0 0% 9%;              /* Main text color - dark gray */
+  
+  /* Heading Colors */
+  --heading-primary: 220 100% 50%;   /* H1 color - blue */
+  --heading-secondary: 0 0% 20%;     /* H2, H3 color - dark gray */
+  
+  /* Brand Colors */
+  --brand-primary: 220 100% 50%;     /* Your main brand color - blue */
+  --brand-secondary: 280 100% 70%;   /* Secondary brand color - purple */
+  --brand-accent: 45 100% 60%;       /* Accent color - orange */
+  
+  /* Background Variations */
+  --bg-light: 0 0% 98%;              /* Light background */
+  --bg-medium: 0 0% 95%;             /* Medium background */
+  --bg-dark: 0 0% 10%;               /* Dark background */
+  
+  /* Text Variations */
+  --text-primary: 0 0% 9%;           /* Primary text */
+  --text-secondary: 0 0% 40%;        /* Secondary text */
+  --text-muted: 0 0% 60%;            /* Muted text */
+  
+  /* Status Colors */
+  --success: 120 100% 40%;           /* Success green */
+  --warning: 45 100% 50%;            /* Warning orange */
+  --error: 0 100% 50%;               /* Error red */
+  --info: 200 100% 50%;              /* Info blue */
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--gradient-background);
+}
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+* {
+  box-sizing: border-box;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+header{
+  border-bottom: 1px solid #2b334a;
+  background: #00000042;
+}
+
+/* === GLOBAL HEADING STYLES === */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: hsl(var(--heading-primary));
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2.4em;
+  color: hsl(var(--heading-secondary));
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.8em;
+  color: hsl(var(--heading-secondary));
+  font-weight: 600;
+}
+
+h4, h5, h6 {
+  color: hsl(var(--text-primary));
+  font-weight: 500;
+}
+
+/* === COMMON UTILITY CLASSES === */
+.bg-primary { background-color: hsl(var(--brand-primary)); }
+.bg-secondary { background-color: hsl(var(--brand-secondary)); }
+.bg-accent { background-color: hsl(var(--brand-accent)); }
+.bg-light { background-color: hsl(var(--bg-light)); }
+.bg-medium { background-color: hsl(var(--bg-medium)); }
+.bg-dark { background-color: hsl(var(--bg-dark)); }
+
+.text-primary { color: hsl(var(--text-primary)); }
+.text-secondary { color: hsl(var(--text-secondary)); }
+.text-muted { color: hsl(var(--text-muted)); }
+.text-white { color: white; }
+
+.text-success { color: hsl(var(--success)); }
+.text-warning { color: hsl(var(--warning)); }
+.text-error { color: hsl(var(--error)); }
+.text-info { color: hsl(var(--info)); }
+
+.bg-success { background-color: hsl(var(--success)); }
+.bg-warning { background-color: hsl(var(--warning)); }
+.bg-error { background-color: hsl(var(--error)); }
+.bg-info { background-color: hsl(var(--info)); }
+
+/* === COMMON COMPONENT STYLES === */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: hsl(var(--brand-primary));
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: hsl(var(--brand-primary) / 0.9);
+}
+
+.btn-secondary {
+  background-color: hsl(var(--brand-secondary));
+  color: white;
+}
+
+.card {
+  background-color: hsl(var(--bg-light));
+  border: 1px solid hsl(var(--bg-medium));
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+.dark {
+  --background: 224 25% 5%;
+  --foreground: 210 50% 98%;
+
+  --card: 224 71.4% 4.1%;
+  --card-foreground: 210 20% 98%;
+
+  --popover: 224 71.4% 4.1%;
+  --popover-foreground: 210 20% 98%;
+
+  --primary: 210 20% 98%;
+  --primary-foreground: 220.9 39.3% 11%;
+
+  --secondary: 215 27.9% 16.9%;
+  --secondary-foreground: 210 20% 98%;
+
+  --muted: 215 27.9% 16.9%;
+  --muted-foreground: 217.9 10.6% 64.9%;
+
+  --accent: 215 27.9% 16.9%;
+  --accent-foreground: 210 20% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 20% 98%;
+
+  --border: 215 27.9% 16.9%;
+  --input: 215 27.9% 16.9%;
+  --ring: 216 12.2% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
