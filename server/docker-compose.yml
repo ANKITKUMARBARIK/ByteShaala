@@ -6,31 +6,49 @@ services:
   api-gateway:
     build: ./api-gateway          # Build from api-gateway folder
     ports:
-      - "5000:5000"              # Outside:Inside port mapping
+      - "8080:5000"              # Outside:Inside port mapping
+    environment:
+      - PORT=5000
+      - AUTH_SERVICE=http://auth-service:5001
+      - USER_SERVICE=http://user-service:5002
     depends_on:
       - rabbitmq                 # Wait for rabbitmq to start first
+      - auth-service             # Wait for auth service
+      - user-service             # Wait for user service
 
   # Service 2: Auth Service (handles login/signup)
   auth-service:
     build: ./auth-service         # Build from auth-service folder
     ports:
       - "5001:5001"              # Outside:Inside port mapping
+    environment:
+      - PORT=5001
+      - MONGODB_URI=mongodb://mongo:27017/auth_db
+      - AUTH_SERVICE=http://auth-service:5001
+      - USER_SERVICE=http://user-service:5002
     depends_on:
       - rabbitmq                 # Wait for rabbitmq to start first
+      - mongo                    # Wait for MongoDB to start first
 
   # Service 3: User Service (handles user data)
   user-service:
     build: ./user-service         # Build from user-service folder
     ports:
       - "5002:5002"              # Outside:Inside port mapping
+    environment:
+      - PORT=5002
+      - MONGODB_URI=mongodb://mongo:27017/user_db
     depends_on:
       - rabbitmq                 # Wait for rabbitmq to start first
+      - mongo                    # Wait for MongoDB to start first
 
   # Service 4: Notification Service (sends notifications)
   notification-service:
     build: ./notification-service # Build from notification-service folder
     ports:
       - "5005:5005"              # Outside:Inside port mapping
+    environment:
+      - PORT=5005
     depends_on:
       - rabbitmq                 # Wait for rabbitmq to start first
 
@@ -40,3 +58,20 @@ services:
     ports:
       - "5672:5672"              # For services to connect
       - "15672:15672"            # Web UI at localhost:15672
+
+  # Service 6: MongoDB (database for auth and user services)
+  mongo:
+    image: mongo:6.0              # Use pre-built MongoDB
+    container_name: mongo
+    ports:
+      - "27017:27017"            # Database port
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo_data:/data/db       # Persist database data
+
+# Named volumes for data persistence
+volumes:
+  mongo_data:
+    driver: local
