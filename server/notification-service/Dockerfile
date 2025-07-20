@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Tell the box "hey, this app uses port 5003"
-EXPOSE 5003
+EXPOSE 5005
 
 # When the box starts, run this command
 CMD ["npm", "run", "dev"]
