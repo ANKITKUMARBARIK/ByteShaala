@@ -6,7 +6,7 @@ services:
   api-gateway:
     build: ./api-gateway          # Build from api-gateway folder
     ports:
-      - "5005:5005"              # Outside:Inside port mapping
+      - "5000:5000"              # Outside:Inside port mapping
     depends_on:
       - rabbitmq                 # Wait for rabbitmq to start first
 
@@ -30,7 +30,7 @@ services:
   notification-service:
     build: ./notification-service # Build from notification-service folder
     ports:
-      - "5003:5003"              # Outside:Inside port mapping
+      - "5005:5005"              # Outside:Inside port mapping
     depends_on:
       - rabbitmq                 # Wait for rabbitmq to start first
 
