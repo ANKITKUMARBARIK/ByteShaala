@@ -13,8 +13,8 @@ RUN npm install
 # Copy all your code into the box
 COPY . .
 
-# Tell the box "hey, this app uses port 5005"
-EXPOSE 5000
+# Tell the box "hey, this app uses port 8888"
+EXPOSE 8888
 
 # When the box starts, run this command
 CMD ["npm", "run", "dev"]

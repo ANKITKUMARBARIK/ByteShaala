@@ -13,7 +13,7 @@ RUN npm install
 # Copy all your code into the box
 COPY . .
 
-# Tell the box "hey, this app uses port 5003"
+# Tell the box "hey, this app uses port 5005"
 EXPOSE 5005
 
 # When the box starts, run this command
