@@ -6,9 +6,9 @@ services:
   api-gateway:
     build: ./api-gateway          # Build from api-gateway folder
     ports:
-      - "8080:5000"              # Outside:Inside port mapping
+      - "8888:8888"              # Outside:Inside port mapping
     environment:
-      - PORT=5000
+      - PORT=8888
       - AUTH_SERVICE=http://auth-service:5001
       - USER_SERVICE=http://user-service:5002
     depends_on:
@@ -75,3 +75,77 @@ services:
 volumes:
   mongo_data:
     driver: local
+
+
+
+
+# # yml testing by ANKIT
+
+# version: '3.8'
+
+# services:
+
+#   mongo:
+#     image: mongo
+#     container_name: mongo
+#     restart: always
+#     ports:
+#       - "27017:27017"
+#     environment:
+#       MONGO_INITDB_ROOT_USERNAME: admin
+#       MONGO_INITDB_ROOT_PASSWORD: admin123
+#     volumes:
+#       - mongo_data:/data/db
+
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     container_name: rabbitmq
+#     restart: always
+#     ports:
+#       - "5672:5672"
+#       - "15672:15672"
+#     environment:
+#       RABBITMQ_DEFAULT_USER: admin
+#       RABBITMQ_DEFAULT_PASS: admin123
+
+#   api-gateway:
+#     build: ./api-gateway
+#     ports:
+#       - "8888:8888"
+#     depends_on:
+#       - auth-service
+#       - user-service
+#     env_file:
+#       - ./api-gateway/.env
+
+#   auth-service:
+#     build: ./auth-service
+#     ports:
+#       - "5001:5001"
+#     depends_on:
+#       - mongo
+#       - rabbitmq
+#     env_file:
+#       - ./auth-service/.env
+
+#   user-service:
+#     build: ./user-service
+#     ports:
+#       - "5002:5002"
+#     depends_on:
+#       - mongo
+#       - rabbitmq
+#     env_file:
+#       - ./user-service/.env
+
+#   notification-service:
+#     build: ./notification-service
+#     ports:
+#       - "5005:5005"
+#     depends_on:
+#       - rabbitmq
+#     env_file:
+#       - ./notification-service/.env
+
+# volumes:
+#   mongo_data:
