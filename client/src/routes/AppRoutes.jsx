@@ -1,13 +1,14 @@
+import { useSelector } from "react-redux";
+import { useRoutes } from "react-router-dom";
+
 import AdminLayout from "@/layouts/AdminLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
-import LoginPage from "@/pages/login";
-import CoursesPage from "@/pages/courses";
-import CourseDetailPage from "@/pages/courseDetail";
-import ProfilePage from "@/pages/profile";
 import AdminPage from "@/pages/admin";
-import { useSelector } from "react-redux";
-import { useRoutes } from "react-router-dom";
+import CourseDetailPage from "@/pages/courseDetail";
+import CoursesPage from "@/pages/courses";
+import LoginPage from "@/pages/login";
+import ProfilePage from "@/pages/profile";
 import RegisterPage from "@/pages/register";
 
 export default function AppRoutes() {

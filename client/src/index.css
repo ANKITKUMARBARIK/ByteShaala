@@ -151,7 +151,7 @@ h1 {
 
 h2 {
   font-size: 2.4em;
-  color: hsl(var(--heading-secondary));
+  color: hsl(var(--heading-primary));
   font-weight: 600;
 }
 
@@ -188,6 +188,13 @@ h4, h5, h6 {
 .bg-warning { background-color: hsl(var(--warning)); }
 .bg-error { background-color: hsl(var(--error)); }
 .bg-info { background-color: hsl(var(--info)); }
+
+.gradient-text {
+  background: linear-gradient(to bottom, #60a5fa, #1d4ed8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
 
 /* === COMMON COMPONENT STYLES === */
 .btn {

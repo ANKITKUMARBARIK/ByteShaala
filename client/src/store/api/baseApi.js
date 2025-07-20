@@ -1,3 +1,5 @@
+/* eslint-disable no-empty-pattern */
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Base API configuration with auth token interceptor

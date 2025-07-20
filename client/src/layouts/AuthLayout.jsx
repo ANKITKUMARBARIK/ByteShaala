@@ -6,7 +6,7 @@ export default function AuthLayout() {
     <>
       <header className="text-white p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">LMS Platform</h1>
+          <h1 className="gradient-text">LMS Platform</h1>
           <nav className="space-x-4">
             <Link to="/" className="hover:text-primary-200">
               Courses
