@@ -1,0 +1,42 @@
+# This file tells Docker "start all these services together"
+version: '3.8'
+
+services:
+  # Service 1: API Gateway (your main entry point)
+  api-gateway:
+    build: ./api-gateway          # Build from api-gateway folder
+    ports:
+      - "5005:5005"              # Outside:Inside port mapping
+    depends_on:
+      - rabbitmq                 # Wait for rabbitmq to start first
+
+  # Service 2: Auth Service (handles login/signup)
+  auth-service:
+    build: ./auth-service         # Build from auth-service folder
+    ports:
+      - "5001:5001"              # Outside:Inside port mapping
+    depends_on:
+      - rabbitmq                 # Wait for rabbitmq to start first
+
+  # Service 3: User Service (handles user data)
+  user-service:
+    build: ./user-service         # Build from user-service folder
+    ports:
+      - "5002:5002"              # Outside:Inside port mapping
+    depends_on:
+      - rabbitmq                 # Wait for rabbitmq to start first
+
+  # Service 4: Notification Service (sends notifications)
+  notification-service:
+    build: ./notification-service # Build from notification-service folder
+    ports:
+      - "5003:5003"              # Outside:Inside port mapping
+    depends_on:
+      - rabbitmq                 # Wait for rabbitmq to start first
+
+  # Service 5: RabbitMQ (message broker - helps services talk)
+  rabbitmq:
+    image: rabbitmq:3-management  # Use pre-built RabbitMQ
+    ports:
+      - "5672:5672"              # For services to connect
+      - "15672:15672"            # Web UI at localhost:15672
