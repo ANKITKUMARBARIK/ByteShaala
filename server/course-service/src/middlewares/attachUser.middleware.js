@@ -3,7 +3,9 @@ import ApiError from "../utils/ApiError.util.js";
 const attachUser = (req, res, next) => {
     const encodedUser = req.headers["x-user-data"];
     if (!encodedUser) {
-        return next(new ApiError(401, "unauthorized request"));
+        return next(
+            new ApiError(401, "unauthorized request")
+        );
     }
     try {
         req.user = JSON.parse(decodeURIComponent(encodedUser));
