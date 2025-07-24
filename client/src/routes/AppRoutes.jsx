@@ -8,6 +8,7 @@ import AdminPage from "@/pages/admin";
 import CourseDetailPage from "@/pages/courseDetail";
 import CoursesPage from "@/pages/courses";
 import LoginPage from "@/pages/login";
+import OtpPage from "@/pages/otp";
 import ProfilePage from "@/pages/profile";
 import RegisterPage from "@/pages/register";
 
@@ -22,6 +23,7 @@ export default function AppRoutes() {
       children: [
         { path: "/login", element: <LoginPage /> },
         { path: "/register", element: <RegisterPage /> },
+        { path: "/verify-otp", element: <OtpPage /> },
       ],
     },
 

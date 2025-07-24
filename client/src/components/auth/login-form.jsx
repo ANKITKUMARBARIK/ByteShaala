@@ -1,13 +1,24 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
+import { useLoginMutation } from "@/actions/authActions";
 import CommonInput from "@/components/common/common-input";
 import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { loginSuccess } from "@/store/slices/authSlice";
 import { loginSchema } from "@/validations";
 
 export function LoginForm({ className, ...props }) {
+  const dispatch = useDispatch();
+  const { addAuth } = useContext(AuthContext);
+  const [login, { isLoading }] = useLoginMutation();
+  const navigate = useNavigate();
+
   const methods = useForm({
     defaultValues: {
       email: "",
@@ -24,12 +35,29 @@ export function LoginForm({ className, ...props }) {
 
   const onSubmit = async (data) => {
     try {
-      console.log("Login data:", data);
-      // TODO: Implement actual login logic here
-      // Example: await loginUser(data);
+      const result = await login(data).unwrap();
+
+      if (result?.success) {
+        // Update Redux store
+        dispatch(
+          loginSuccess({
+            user: result?.data?.user,
+            token: result?.data?.accessToken,
+          })
+        );
+
+        // Update AuthContext
+        addAuth({
+          token: result?.data?.accessToken,
+          refToken: result?.data?.refreshToken,
+        });
+
+        toast.success("Login successful!");
+        navigate("/courses");
+      }
     } catch (error) {
       console.error("Login error:", error);
-      // TODO: Handle login errors
+      toast.error(error?.data?.message || "Login failed. Please try again.");
     }
   };
 
@@ -75,8 +103,12 @@ export function LoginForm({ className, ...props }) {
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Logging in..." : "Login"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || isLoading}
+          >
+            {isSubmitting || isLoading ? "Logging in..." : "Login"}
           </Button>
 
           <Button variant="outline" className="w-full" type="button">

@@ -1,21 +1,24 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, FormProvider } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
+import { useRegisterMutation } from "@/actions/authActions";
 import CommonInput from "@/components/common/common-input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { signupSchema } from "@/validations";
 
 export function SignupForm({ className, ...props }) {
+  const navigate = useNavigate();
+  const [register, { isLoading }] = useRegisterMutation();
+
   const methods = useForm({
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
-      phoneNumber: "",
       password: "",
-      gender: "",
     },
     resolver: yupResolver(signupSchema),
     mode: "onBlur", // Validate on blur for better UX
@@ -24,17 +27,28 @@ export function SignupForm({ className, ...props }) {
   const {
     handleSubmit,
     formState: { isSubmitting, errors },
-    register,
+    register: registerField,
   } = methods;
 
   const onSubmit = async (data) => {
     try {
-      console.log("Signup data:", data);
-      // TODO: Implement actual signup logic here
-      // Example: await registerUser(data);
+      const result = await register(data).unwrap();
+
+      // Don't auto-login after registration, redirect to OTP verification
+      toast.success("Account created successfully! Please verify your email.");
+
+      // Redirect to OTP verification page with email
+      navigate("/verify-otp", {
+        state: {
+          email: data.email,
+          message: "Please check your email for the verification code.",
+        },
+      });
     } catch (error) {
       console.error("Signup error:", error);
-      // TODO: Handle signup errors
+      toast.error(
+        error?.data?.message || "Registration failed. Please try again."
+      );
     }
   };
 
@@ -59,6 +73,7 @@ export function SignupForm({ className, ...props }) {
               type="text"
               placeholder="John"
               required
+              {...registerField("firstName")}
             />
             <CommonInput
               name="lastName"
@@ -66,6 +81,7 @@ export function SignupForm({ className, ...props }) {
               type="text"
               placeholder="Doe"
               required
+              {...registerField("lastName")}
             />
           </div>
 
@@ -75,6 +91,7 @@ export function SignupForm({ className, ...props }) {
             type="email"
             placeholder="m@example.com"
             required
+            {...registerField("email")}
           />
 
           <CommonInput
@@ -83,10 +100,17 @@ export function SignupForm({ className, ...props }) {
             type="password"
             placeholder="Create a strong password"
             required
+            {...registerField("password")}
           />
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Creating Account..." : "Create Account"}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || isLoading}
+          >
+            {isSubmitting || isLoading
+              ? "Creating Account..."
+              : "Create Account"}
           </Button>
 
           <Button variant="outline" className="w-full" type="button">
