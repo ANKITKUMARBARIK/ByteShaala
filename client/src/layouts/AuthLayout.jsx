@@ -33,10 +33,11 @@ export default function AuthLayout() {
           // Only logout if we're not already on auth pages
           if (
             location.pathname !== "/login" &&
-            location.pathname !== "/signup" &&
-            location.pathname !== "/otp"
+            location.pathname !== "/register" &&
+            location.pathname !== "/verify-otp"
           ) {
             handleLogout();
+            return;
           }
           return;
         }
