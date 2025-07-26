@@ -5,14 +5,16 @@ const tokenVerifyMail = async (firstName, lastName, email, token) => {
     try {
         const fullName = `${firstName} ${lastName}`;
 
+        const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL || "http://localhost:1573";
+        const resetLink = `${FRONTEND_BASE_URL}/reset-password/${token}`;
+
         const htmlContent = await fs.readFile(
             "./src/mails/templates/tokenVerifyMail.html",
             "utf-8"
         );
         const finalHtml = htmlContent
             .replace("{{fullName}}", fullName)
-            .replace("{{token}}", token)
-            .replace("{{actionLink}}", "http://localhost:5000/");
+            .replace("{{actionLink}}", resetLink);
 
         const mailOptions = {
             from: {
