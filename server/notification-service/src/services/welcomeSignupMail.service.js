@@ -11,7 +11,7 @@ const welcomeSignupMail = async (firstName, lastName, email) => {
         );
         const finalHtml = htmlContent
             .replace("{{fullName}}", fullName)
-            .replace("{{dashboardLink}}", "http://localhost:5000/");
+            .replace("{{dashboardLink}}", "http://localhost:5173/");
 
         const mailOptions = {
             from: {

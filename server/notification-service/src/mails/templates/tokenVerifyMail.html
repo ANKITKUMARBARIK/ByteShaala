@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Action Required | ByteShaala Team 🎓</title>
+    <title>Reset Your Password | ByteShaala Team 🎓</title>
     <style>
         body {
             background-color: #f5f7fa;
@@ -43,18 +43,6 @@
             margin: 10px 0;
         }
 
-        .token-box {
-            display: inline-block;
-            background-color: #f0f0f0;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #007bff;
-            letter-spacing: 1px;
-            margin: 20px 0;
-        }
-
         .link-box {
             margin: 25px 0;
         }
@@ -79,30 +67,36 @@
             font-size: 14px;
             color: #888;
         }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="logo">ByteShaala Team 🎓</div>
-        <div class="heading">Action Required</div>
+        <div class="heading">Reset Your Password</div>
 
         <p class="text">Hello {{fullName}},</p>
-        <p class="text">Please use the token below to proceed with your request:</p>
-
-        <div class="token-box">{{token}}</div>
-
-        <p class="text">Or click the button below to continue directly:</p>
+        <p class="text">
+            We received a request to reset your password. Click the button below to
+            proceed:
+        </p>
 
         <div class="link-box">
-            <a class="action-link" href="{{actionLink}}">Continue</a>
+            <a class="action-link" href="{{actionLink}}">Reset Password</a>
         </div>
 
-        <p class="text">This link/token is valid for <strong>1 hour</strong>. Please do not share it with anyone.</p>
+        <p class="text">
+            If you didn't request this, you can safely ignore this email.
+        </p>
 
         <div class="footer">
             — ByteShaala Team 🎓<br />
-            <a href="http://localhost:5000">Visit ByteShaala Team 🎓</a>
+            <a href="http://localhost:5173/">Visit ByteShaala</a>
         </div>
     </div>
 </body>
