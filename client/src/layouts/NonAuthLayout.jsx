@@ -1,11 +1,10 @@
-import Stack from "@mui/material/Stack";
 import { Outlet } from "react-router-dom";
 
 function NonAuthLayout() {
   return (
-    <Stack alignItems="center" justifyContent={"center"} height={"100vh"}>
+    <div className="flex items-center justify-center h-screen">
       <Outlet />
-    </Stack>
+    </div>
   );
 }
 

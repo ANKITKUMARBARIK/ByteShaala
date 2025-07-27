@@ -42,6 +42,26 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["Auth"],
     }),
 
+    // Forgot Password
+    forgotPassword: builder.mutation({
+      query: ({ email }) => ({
+        url: "auth/forget-password",
+        method: "POST",
+        body: { email },
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+
+    // Reset Password
+    resetPassword: builder.mutation({
+      query: ({ newPassword, confirmPassword, token }) => ({
+        url: `auth/reset-password/${token}`,
+        method: "POST",
+        body: { newPassword, confirmPassword },
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+
     // Get current user (optional - for checking auth status)
     getCurrentUser: builder.query({
       query: () => "auth/me",
@@ -55,5 +75,7 @@ export const {
   useLoginMutation,
   useVerifyOtpMutation,
   useResendOtpMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetCurrentUserQuery,
 } = authApi;
