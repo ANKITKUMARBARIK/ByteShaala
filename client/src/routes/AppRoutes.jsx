@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   useRoutes,
@@ -15,6 +15,7 @@ import { getCookie } from "@/lib/utils";
 import AdminPage from "@/pages/admin";
 import CourseDetailPage from "@/pages/courseDetail";
 import CoursesPage from "@/pages/courses";
+import DashboardPage from "@/pages/dashboard";
 import ForgotPasswordPage from "@/pages/forgot-password";
 import LoginPage from "@/pages/login";
 import OtpPage from "@/pages/otp";
@@ -25,8 +26,8 @@ import ResetPasswordPage from "@/pages/reset-password";
 // Define auth routes (protected routes)
 const authRoutes = [
   {
-    path: "/courses",
-    element: CoursesPage,
+    path: "/dashboard",
+    element: DashboardPage,
   },
   {
     path: "/course/:id",
@@ -38,7 +39,7 @@ const authRoutes = [
   },
 ];
 
-// Define non-auth routes (public routes)
+// Define non-auth routes (public routes) - now includes courses
 const nonAuthRoutes = [
   {
     path: "/login",
@@ -60,6 +61,10 @@ const nonAuthRoutes = [
     path: "/reset-password/:token",
     element: ResetPasswordPage,
   },
+  {
+    path: "/courses",
+    element: CoursesPage,
+  },
 ];
 
 function LayoutWrapper({ nonAuthRoutes }) {
@@ -74,17 +79,37 @@ function LayoutWrapper({ nonAuthRoutes }) {
   // Check if current route is an authenticated route
   const authenticatedRoute = !matchRoutes(nonAuthRoutes, location.pathname);
 
+  // Use useEffect to handle authentication changes with a small delay
+  useEffect(() => {
+    // Small delay to allow state propagation during logout
+    const timer = setTimeout(() => {
+      // This will trigger a re-render after state has settled
+    }, 10);
+
+    return () => clearTimeout(timer);
+  }, [authenticated, accessToken, refreshToken]);
+
   // Redirect logic
   if (!isAuthenticated && authenticatedRoute) {
     // Unauthenticated user trying to access protected route
     return <Navigate to="/login" state={{ from: location }} replace />;
   } else if (isAuthenticated && !authenticatedRoute) {
     // Authenticated user trying to access public route
-    return <Navigate to="/courses" state={{ from: location }} replace />;
+    // Special handling for login route during logout
+    if (location.pathname === "/login" && !accessToken && !refreshToken) {
+      // If cookies are cleared but AuthContext hasn't updated yet, allow login
+      return <NonAuthLayout />;
+    }
+    // For courses page, allow both authenticated and non-authenticated users
+    if (location.pathname === "/courses") {
+      // Authenticated users accessing courses should use AuthLayout
+      return <AuthLayout />;
+    }
+    return <Navigate to="/dashboard" replace />;
   }
 
-  // Return appropriate layout based on route type
-  return authenticatedRoute ? <AuthLayout /> : <NonAuthLayout />;
+  // Return appropriate layout based on authentication status
+  return isAuthenticated ? <AuthLayout /> : <NonAuthLayout />;
 }
 
 export default function AppRoutes() {

@@ -143,27 +143,40 @@ header{
 
 /* === GLOBAL HEADING STYLES === */
 h1 {
-  font-size: 3.2em;
+  font-size: 3.2rem;
   line-height: 1.1;
   color: hsl(var(--heading-primary));
   font-weight: 700;
 }
 
 h2 {
-  font-size: 2.4em;
+  font-size: 2.4rem;
   color: hsl(var(--heading-primary));
   font-weight: 600;
 }
 
 h3 {
-  font-size: 1.8em;
+  font-size: 1.6rem;
   color: hsl(var(--heading-secondary));
   font-weight: 600;
 }
 
-h4, h5, h6 {
-  color: hsl(var(--text-primary));
-  font-weight: 500;
+h4 {
+  font-size: 1.4rem;
+  color: hsl(var(--heading-secondary));
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 1.2rem;
+  color: hsl(var(--heading-secondary));
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 1rem;
+  color: hsl(var(--heading-secondary));
+  font-weight: 600;
 }
 
 /* === COMMON UTILITY CLASSES === */
