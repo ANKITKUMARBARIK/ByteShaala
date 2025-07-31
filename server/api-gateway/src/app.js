@@ -95,4 +95,28 @@ app.use(
     })
 );
 
+// cart service
+app.use(
+    "/api/v1/cart",
+    verifyAuthentication,
+    proxy(process.env.CART_SERVICE, {
+        proxyReqPathResolver: (req) => {
+            return `/api/v1/cart${req.url}`;
+        },
+        proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+            const user = srcReq.user;
+            if (user) {
+                proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
+                    JSON.stringify(user)
+                );
+            }
+            return proxyReqOpts;
+        },
+        proxyErrorHandler: (err, res, next) => {
+            console.error("Cart Proxy Error:", err.message);
+            next(err);
+        },
+    })
+);
+
 export default app;
