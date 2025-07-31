@@ -76,8 +76,8 @@ const courseSchema = new Schema(
         },
         instructor: {
             type: Types.ObjectId,
-            ref: "User",
             required: true,
+            ref: "Auth",
         },
     },
     { timestamps: true }

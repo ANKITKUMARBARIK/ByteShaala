@@ -4,10 +4,10 @@ const userSchema = new Schema(
     {
         userId: {
             type: Types.ObjectId,
-            ref: "Auth",
             required: true,
             unique: true,
             index: true,
+            ref: "Auth",
         },
         firstName: {
             type: String,
@@ -24,12 +24,6 @@ const userSchema = new Schema(
         avatar: {
             type: String,
         },
-        courses: [
-            {
-                type: Types.ObjectId,
-                ref: "Course",
-            },
-        ],
     },
     { timestamps: true }
 );
