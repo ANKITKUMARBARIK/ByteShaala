@@ -5,17 +5,30 @@ version: '3.8'
 services:
   mongodb:
     image: "mongo"
-    container_name: mongo-container #name of container
+    container_name: mongo-container  # name of container
     ports:
-      - 27017:27017 #port mapping
+      - 27017:27017  # port mapping
     volumes:
-      - mongodb_data:/data/db #attach volume
+      - mongodb_data:/data/db  # attach volume
     healthcheck:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 40s
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-container
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - mongodb
 
   rabbitmq:
     image: "rabbitmq:3-management"
@@ -29,6 +42,19 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway-container
+    ports:
+      - 8888:8888
+    depends_on:
+      - auth-service
+      - user-service
+    environment:
+      PORT: "8888"
+      AUTH_SERVICE: "http://auth-service:5001"
+      USER_SERVICE: "http://user-service:5002"
 
   auth-service:
     build: ./auth-service
@@ -50,7 +76,7 @@ services:
       REFRESH_TOKEN_SECRET: "Q44EVvuve7RlsuvafmDw2jVxVG47HOmYMfoiRSkyiEmipb20CTRFBh8oEhxjcoO6"
       REFRESH_TOKEN_EXPIRY: "10d"
       ADMIN_EMAIL: "admin.dev@gmail.com"
-      ADMIN_PASSWORD: "123456"  
+      ADMIN_PASSWORD: "123456"
 
   user-service:
     build: ./user-service
@@ -69,22 +95,7 @@ services:
       NODE_ENV: "development"
       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
       CLOUDINARY_API_KEY: "118319496188455"
-      CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"  
-
-  notification-service:
-    build: ./notification-service
-    container_name: notification-service-container
-    ports:
-      - 5005:5005
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    environment:
-      MONGODB_URI: "mongodb://mongodb:27017/notification-service"
-      RABBITMQ_URL: "amqp://rabbitmq:5672"
-      PORT: "5005"
-      NODE_ENV: "development"
-      FRONTEND_BASE_URL: "http://localhost:5173"
+      CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
 
   course-service:
     build: ./course-service
@@ -103,21 +114,36 @@ services:
       NODE_ENV: "development"
       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
       CLOUDINARY_API_KEY: "118319496188455"
-      CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"    
-      
-  api-gateway:
-    build: ./api-gateway
-    container_name: api-gateway-container
-    ports:
-      - 8888:8888
-    depends_on:
-      - auth-service
-      - user-service
-    environment:
-      PORT: "8888"
-      AUTH_SERVICE: "http://auth-service:5001"
-      USER_SERVICE: "http://user-service:5002"
+      CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
 
-#create volume    
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service-container
+    ports:
+      - 5004:5004
+    depends_on:
+      mongodb:
+        condition: service_started
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/cart-service"
+      PORT: "5004"
+      NODE_ENV: "development"
+      GATEWAY_URL: "http://api-gateway:8888"
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service-container
+    ports:
+      - 5005:5005
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/notification-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
+      PORT: "5005"
+      NODE_ENV: "development"
+      FRONTEND_BASE_URL: "http://localhost:5173"
+
 volumes:
-      mongodb_data:
+  mongodb_data:
