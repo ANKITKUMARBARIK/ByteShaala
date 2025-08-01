@@ -23,7 +23,7 @@ services:
       RABBITMQ_DEFAULT_PASS: admin123
 
   auth-service:
-    image: "auth-service"
+    build: ./auth-service
     container_name: auth-service-container
     ports:
       - 5001:5001
@@ -43,7 +43,7 @@ services:
       ADMIN_PASSWORD: "123456"  
 
   user-service:
-    image: "user-service"
+    build: ./user-service
     container_name: user-service-container
     ports:
       - 5002:5002
@@ -60,7 +60,7 @@ services:
       CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"  
 
   notification-service:
-    image: "notification-service"
+    build: ./notification-service
     container_name: notification-service-container
     ports:
       - 5005:5005
@@ -74,7 +74,7 @@ services:
       FRONTEND_BASE_URL: "http://localhost:5173"
 
   course-service:
-    image: "course-service"
+    build: ./course-service
     container_name: course-service-container
     ports:
       - 5003:5003
@@ -91,7 +91,7 @@ services:
       CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"    
       
   api-gateway:
-    image: "api-gateway"
+    build: ./api-gateway
     container_name: api-gateway-container
     ports:
       - 8888:8888
