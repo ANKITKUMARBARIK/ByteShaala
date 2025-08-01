@@ -10,7 +10,12 @@ services:
       - 27017:27017 #port mapping
     volumes:
       - mongodb_data:/data/db #attach volume
-    
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   rabbitmq:
     image: "rabbitmq:3-management"
@@ -18,9 +23,12 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin123
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   auth-service:
     build: ./auth-service
@@ -28,8 +36,10 @@ services:
     ports:
       - 5001:5001
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/auth-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
@@ -48,8 +58,10 @@ services:
     ports:
       - 5002:5002
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/user-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
@@ -65,7 +77,8 @@ services:
     ports:
       - 5005:5005
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/notification-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
@@ -79,8 +92,10 @@ services:
     ports:
       - 5003:5003
     depends_on:
-      - mongodb
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/course-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
@@ -106,5 +121,3 @@ services:
 #create volume    
 volumes:
       mongodb_data:
-    
-  
