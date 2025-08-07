@@ -55,6 +55,10 @@ services:
       PORT: "8888"
       AUTH_SERVICE: "http://auth-service:5001"
       USER_SERVICE: "http://user-service:5002"
+      COURSE_SERVICE: "http://course-service:5003"
+      CART_SERVICE: "http://cart-service:5004"
+      ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
+      FRONTEND_BASE_URL: "http://localhost:5173"
 
   auth-service:
     build: ./auth-service
@@ -103,13 +107,10 @@ services:
     ports:
       - 5003:5003
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       mongodb:
         condition: service_started
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/course-service"
-      RABBITMQ_URL: "amqp://rabbitmq:5672"
       PORT: "5003"
       NODE_ENV: "development"
       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
@@ -139,11 +140,11 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      MONGODB_URI: "mongodb://mongodb:27017/notification-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
       PORT: "5005"
-      NODE_ENV: "development"
       FRONTEND_BASE_URL: "http://localhost:5173"
+      APP_GMAIL: "ankitbarik.dev@gmail.com"
+      APP_PASSWORD: "dxwqztzltqcqnbbw"
 
 volumes:
   mongodb_data:
