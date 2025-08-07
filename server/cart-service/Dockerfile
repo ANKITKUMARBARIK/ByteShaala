@@ -1,11 +1,11 @@
 # Get a computer with Node.js already installed
-FROM node:18
+FROM node:20
 
 # Create a folder called /app inside the box
 WORKDIR /app
 
 # Copy package.json into the box
-COPY package.json .
+COPY package* .
 
 # Install all the packages your app needs
 RUN npm install

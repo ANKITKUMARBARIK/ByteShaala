@@ -1,151 +1,149 @@
 # This file tells Docker "start all these services together"
+# whenever we create compose file we don't need to create network manually by default they are referencing each other.
 version: '3.8'
 
 services:
-  # Service 1: API Gateway (your main entry point)
-  api-gateway:
-    build: ./api-gateway          # Build from api-gateway folder
+  mongodb:
+    image: "mongo"
+    container_name: mongo-container  # name of container
     ports:
-      - "8888:8888"              # Outside:Inside port mapping
-    environment:
-      - PORT=8888
-      - AUTH_SERVICE=http://auth-service:5001
-      - USER_SERVICE=http://user-service:5002
-    depends_on:
-      - rabbitmq                 # Wait for rabbitmq to start first
-      - auth-service             # Wait for auth service
-      - user-service             # Wait for user service
-
-  # Service 2: Auth Service (handles login/signup)
-  auth-service:
-    build: ./auth-service         # Build from auth-service folder
-    ports:
-      - "5001:5001"              # Outside:Inside port mapping
-    environment:
-      - PORT=5001
-      - MONGODB_URI=mongodb://mongo:27017/auth_db
-      - AUTH_SERVICE=http://auth-service:5001
-      - USER_SERVICE=http://user-service:5002
-    depends_on:
-      - rabbitmq                 # Wait for rabbitmq to start first
-      - mongo                    # Wait for MongoDB to start first
-
-  # Service 3: User Service (handles user data)
-  user-service:
-    build: ./user-service         # Build from user-service folder
-    ports:
-      - "5002:5002"              # Outside:Inside port mapping
-    environment:
-      - PORT=5002
-      - MONGODB_URI=mongodb://mongo:27017/user_db
-    depends_on:
-      - rabbitmq                 # Wait for rabbitmq to start first
-      - mongo                    # Wait for MongoDB to start first
-
-  # Service 4: Notification Service (sends notifications)
-  notification-service:
-    build: ./notification-service # Build from notification-service folder
-    ports:
-      - "5005:5005"              # Outside:Inside port mapping
-    environment:
-      - PORT=5005
-    depends_on:
-      - rabbitmq                 # Wait for rabbitmq to start first
-
-  # Service 5: RabbitMQ (message broker - helps services talk)
-  rabbitmq:
-    image: rabbitmq:3-management  # Use pre-built RabbitMQ
-    ports:
-      - "5672:5672"              # For services to connect
-      - "15672:15672"            # Web UI at localhost:15672
-
-  # Service 6: MongoDB (database for auth and user services)
-  mongo:
-    image: mongo:6.0              # Use pre-built MongoDB
-    container_name: mongo
-    ports:
-      - "27017:27017"            # Database port
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
+      - 27017:27017  # port mapping
     volumes:
-      - mongo_data:/data/db       # Persist database data
+      - mongodb_data:/data/db  # attach volume
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
-# Named volumes for data persistence
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-container
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - mongodb
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq-container
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway-container
+    ports:
+      - 8888:8888
+    depends_on:
+      - auth-service
+      - user-service
+    environment:
+      PORT: "8888"
+      AUTH_SERVICE: "http://auth-service:5001"
+      USER_SERVICE: "http://user-service:5002"
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service-container
+    ports:
+      - 5001:5001
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/auth-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
+      PORT: "5001"
+      NODE_ENV: "development"
+      ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
+      ACCESS_TOKEN_EXPIRY: "1d"
+      REFRESH_TOKEN_SECRET: "Q44EVvuve7RlsuvafmDw2jVxVG47HOmYMfoiRSkyiEmipb20CTRFBh8oEhxjcoO6"
+      REFRESH_TOKEN_EXPIRY: "10d"
+      ADMIN_EMAIL: "admin.dev@gmail.com"
+      ADMIN_PASSWORD: "123456"
+
+  user-service:
+    build: ./user-service
+    container_name: user-service-container
+    ports:
+      - 5002:5002
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/user-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
+      PORT: "5002"
+      NODE_ENV: "development"
+      CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
+      CLOUDINARY_API_KEY: "118319496188455"
+      CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
+
+  course-service:
+    build: ./course-service
+    container_name: course-service-container
+    ports:
+      - 5003:5003
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/course-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
+      PORT: "5003"
+      NODE_ENV: "development"
+      CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
+      CLOUDINARY_API_KEY: "118319496188455"
+      CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
+
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service-container
+    ports:
+      - 5004:5004
+    depends_on:
+      mongodb:
+        condition: service_started
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/cart-service"
+      PORT: "5004"
+      NODE_ENV: "development"
+      GATEWAY_URL: "http://api-gateway:8888"
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service-container
+    ports:
+      - 5005:5005
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: "mongodb://mongodb:27017/notification-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
+      PORT: "5005"
+      NODE_ENV: "development"
+      FRONTEND_BASE_URL: "http://localhost:5173"
+
 volumes:
-  mongo_data:
-    driver: local
-
-
-
-
-# # yml testing by ANKIT
-
-# version: '3.8'
-
-# services:
-
-#   mongo:
-#     image: mongo
-#     container_name: mongo
-#     restart: always
-#     ports:
-#       - "27017:27017"
-#     environment:
-#       MONGO_INITDB_ROOT_USERNAME: admin
-#       MONGO_INITDB_ROOT_PASSWORD: admin123
-#     volumes:
-#       - mongo_data:/data/db
-
-#   rabbitmq:
-#     image: rabbitmq:3-management
-#     container_name: rabbitmq
-#     restart: always
-#     ports:
-#       - "5672:5672"
-#       - "15672:15672"
-#     environment:
-#       RABBITMQ_DEFAULT_USER: admin
-#       RABBITMQ_DEFAULT_PASS: admin123
-
-#   api-gateway:
-#     build: ./api-gateway
-#     ports:
-#       - "8888:8888"
-#     depends_on:
-#       - auth-service
-#       - user-service
-#     env_file:
-#       - ./api-gateway/.env
-
-#   auth-service:
-#     build: ./auth-service
-#     ports:
-#       - "5001:5001"
-#     depends_on:
-#       - mongo
-#       - rabbitmq
-#     env_file:
-#       - ./auth-service/.env
-
-#   user-service:
-#     build: ./user-service
-#     ports:
-#       - "5002:5002"
-#     depends_on:
-#       - mongo
-#       - rabbitmq
-#     env_file:
-#       - ./user-service/.env
-
-#   notification-service:
-#     build: ./notification-service
-#     ports:
-#       - "5005:5005"
-#     depends_on:
-#       - rabbitmq
-#     env_file:
-#       - ./notification-service/.env
-
-# volumes:
-#   mongo_data:
+  mongodb_data:
