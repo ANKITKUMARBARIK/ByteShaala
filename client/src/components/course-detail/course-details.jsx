@@ -7,11 +7,14 @@ import {
   Calendar,
   Play,
   CheckCircle,
+  ShoppingCart,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 import { allCourses } from "../courses/data";
 
+import { useAddToCartMutation } from "@/actions/cartActions";
 import {
   Accordion,
   AccordionContent,
@@ -21,6 +24,7 @@ import {
 
 const CourseDetails = () => {
   const { id } = useParams();
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
 
   // Find course by ID (with enhanced data structure)
   const course = allCourses.find((c) => c.id === parseInt(id)) || {
@@ -82,6 +86,19 @@ const CourseDetails = () => {
   const discountPercentage = Math.round(
     ((course.originalPrice - course.discountPrice) / course.originalPrice) * 100
   );
+
+  const handleAddToCart = async () => {
+    try {
+      await addToCart(course.id).unwrap();
+      toast.success("Course added to cart!");
+    } catch (error) {
+      if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error("Failed to add course to cart");
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen text-white">
@@ -187,8 +204,13 @@ const CourseDetails = () => {
                     </div>
                   </div>
 
-                  <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 mb-3">
-                    Add to Cart
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 mb-3 flex items-center justify-center space-x-2"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    <span>{isAddingToCart ? "Adding..." : "Add to Cart"}</span>
                   </button>
 
                   <button className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
@@ -226,7 +248,7 @@ const CourseDetails = () => {
             </div>
 
             {/* Course Content with ShadCN Accordion */}
-            <div className="bg-gray-800 p-6">
+            <div className="bg-gray-800 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-6">Course content</h2>
               <div className="mb-6 text-gray-300">
                 {course.courseContent.length} sections •{" "}
@@ -244,7 +266,7 @@ const CourseDetails = () => {
                     value={`section-${index}`}
                     className="border-gray-700"
                   >
-                    <AccordionTrigger className="text-left hover:no-underline hover:bg-gray-700/50 px-4 py-4 transition-colors !rounded-none">
+                    <AccordionTrigger className="text-left hover:no-underline hover:bg-gray-700/50 px-4 py-4 rounded-lg transition-colors">
                       <div className="flex flex-col items-start">
                         <h3 className="font-semibold text-white text-base mb-1">
                           {section.title}
@@ -255,7 +277,7 @@ const CourseDetails = () => {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="px-4 pb-4 pt-2">
-                      <div className="bg-gray-700/30 p-4 mt-2">
+                      <div className="bg-gray-700/30 rounded-lg p-4 mt-2">
                         <div className="text-gray-300 text-sm space-y-2">
                           <p className="font-medium text-gray-200">
                             Section Overview:
@@ -296,7 +318,7 @@ const CourseDetails = () => {
           {/* Right Sidebar - Additional Info */}
           <div className="lg:col-span-1">
             <div className="bg-gray-800 rounded-lg p-6">
-              <h2 className="text-xl font-bold mb-4">Course includes:</h2>
+              <h3 className="text-xl font-bold mb-4">Course includes:</h3>
               <div className="space-y-3 text-gray-300">
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-blue-400" />

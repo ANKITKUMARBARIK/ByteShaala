@@ -11,6 +11,7 @@ const CourseCard = ({
   showProgress = true,
   showPricing = false,
   onAddToCart,
+  isAddingToCart = false,
 }) => {
   const {
     title,
@@ -119,10 +120,16 @@ const CourseCard = ({
           {onAddToCart && (
             <button
               onClick={() => onAddToCart(course)}
-              className="flex-1 btn-primary px-4 py-2 rounded-md font-medium hover:bg-sky-600 transition-colors duration-200 flex items-center justify-center gap-2"
+              disabled={isAddingToCart}
+              className={cn(
+                "flex-1 btn-primary px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center justify-center gap-2",
+                isAddingToCart
+                  ? "bg-sky-400 cursor-not-allowed opacity-75"
+                  : "bg-sky-500 hover:bg-sky-600"
+              )}
             >
               <ShoppingCart className="w-4 h-4" />
-              Add to Cart
+              {isAddingToCart ? "Adding..." : "Add to Cart"}
             </button>
           )}
 
