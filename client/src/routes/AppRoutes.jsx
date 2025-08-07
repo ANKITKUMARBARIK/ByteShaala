@@ -13,7 +13,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 import NonAuthLayout from "@/layouts/NonAuthLayout";
 import { getCookie } from "@/lib/utils";
 import AdminPage from "@/pages/admin";
-import CourseDetailPage from "@/pages/courseDetail";
+import CourseDetailPage from "@/pages/course-detail";
 import CoursesPage from "@/pages/courses";
 import DashboardPage from "@/pages/dashboard";
 import ForgotPasswordPage from "@/pages/forgot-password";
@@ -30,16 +30,12 @@ const authRoutes = [
     element: DashboardPage,
   },
   {
-    path: "/course/:id",
-    element: CourseDetailPage,
-  },
-  {
     path: "/profile",
     element: ProfilePage,
   },
 ];
 
-// Define non-auth routes (public routes) - now includes courses
+// Define non-auth routes (public routes) - now includes courses and course details
 const nonAuthRoutes = [
   {
     path: "/login",
@@ -64,6 +60,10 @@ const nonAuthRoutes = [
   {
     path: "/courses",
     element: CoursesPage,
+  },
+  {
+    path: "/courses/:id",
+    element: CourseDetailPage,
   },
 ];
 
