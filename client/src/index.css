@@ -157,7 +157,7 @@ h2 {
 
 h3 {
   font-size: 1.6rem;
-  color: hsl(var(--heading-secondary));
+  color: hsl(var(--heading-primary));
   font-weight: 600;
 }
 
@@ -240,7 +240,6 @@ h6 {
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
 
 @media (prefers-color-scheme: light) {
   :root {

@@ -13,6 +13,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 import NonAuthLayout from "@/layouts/NonAuthLayout";
 import { getCookie } from "@/lib/utils";
 import AdminPage from "@/pages/admin";
+import CartPage from "@/pages/cart";
 import CourseDetailPage from "@/pages/course-detail";
 import CoursesPage from "@/pages/courses";
 import DashboardPage from "@/pages/dashboard";
@@ -28,6 +29,10 @@ const authRoutes = [
   {
     path: "/dashboard",
     element: DashboardPage,
+  },
+  {
+    path: "/cart",
+    element: CartPage,
   },
   {
     path: "/profile",

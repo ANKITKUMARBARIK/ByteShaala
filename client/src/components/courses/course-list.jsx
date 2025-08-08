@@ -1,15 +1,19 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { allCourses } from "./data";
 
 import Pagination from "@/components/common/pagination";
 import CourseCard from "@/components/dashboard/course-card";
+import { useAddToCartMutation } from "@/actions/cartActions";
 
 const CourseList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [addingCourseId, setAddingCourseId] = useState(null);
   const itemsPerPage = 9;
 
   // Filter courses based on search term
@@ -39,10 +43,20 @@ const CourseList = () => {
     navigate(`/courses/${course.id}`);
   };
 
-  const handleAddToCart = (course) => {
-    console.log("Added to cart:", course);
-    // Handle add to cart functionality here
-    // You can integrate with your cart state management
+  const handleAddToCart = async (course) => {
+    try {
+      setAddingCourseId(course.id);
+      await addToCart(course.id).unwrap();
+      toast.success("Course added to cart!");
+    } catch (error) {
+      if (error?.data?.message) {
+        toast.error(error.data.message);
+      } else {
+        toast.error("Failed to add course to cart");
+      }
+    } finally {
+      setAddingCourseId(null);
+    }
   };
 
   return (
@@ -102,6 +116,7 @@ const CourseList = () => {
                 showProgress={false} // Don't show progress on courses page
                 showPricing={true} // Show pricing on courses page
                 onAddToCart={handleAddToCart} // Enable add to cart
+                isAddingToCart={addingCourseId === course.id} // Show loading state for specific course
               />
             ))}
           </div>

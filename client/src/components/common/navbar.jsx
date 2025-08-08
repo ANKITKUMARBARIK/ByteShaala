@@ -1,10 +1,28 @@
-import React, { useState } from "react";
+import {
+  Menu,
+  X,
+  User,
+  BookOpen,
+  LogOut,
+  LogIn,
+  UserPlus,
+  ShoppingCart,
+} from "lucide-react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, User, BookOpen, LogOut, LogIn, UserPlus } from "lucide-react";
+
+import { useGetCartQuery } from "../../actions/cartActions";
 
 const Navbar = ({ isAuthenticated, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Get cart data for authenticated users
+  // const { data: cartData } = useGetCartQuery(undefined, {
+  //   skip: !isAuthenticated, // Only fetch cart data if user is authenticated
+  // });
+
+  // const cartItemsCount = cartData?.items?.length || 0;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -15,7 +33,6 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
   };
 
   const handleLogout = () => {
-    closeMobileMenu();
     onLogout();
   };
 
@@ -48,17 +65,13 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
   return (
     <header className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link
-            to={`/${isAuthenticated ? "dashboard" : "login"}`}
-            className="flex items-center space-x-2"
-            onClick={closeMobileMenu}
-          >
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
+              <span className="text-white font-bold text-lg">B</span>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               ByteShaala
             </span>
           </Link>
@@ -76,8 +89,20 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                   <BookOpen className="w-4 h-4" />
                   <span>Courses</span>
                 </Link>
+                <Link
+                  to="/cart"
+                  className={`${getLinkClasses("/cart")} relative`}
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Cart</span>
+                  {/* {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartItemsCount}
+                    </span>
+                  )} */}
+                </Link>
                 <button
-                  onClick={onLogout}
+                  onClick={handleLogout}
                   className="flex items-center space-x-2 text-gray-300 hover:text-red-400 transition-colors duration-200"
                 >
                   <LogOut className="w-4 h-4" />
@@ -97,7 +122,7 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                 </Link>
                 <Link
                   to="/register"
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 hover:!text-white transition-all duration-200"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Sign Up</span>
@@ -120,15 +145,15 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
           </button>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Menu */}
         <div
           className={`md:hidden transition-all duration-300 ease-in-out ${
             isMobileMenuOpen
-              ? "max-h-96 opacity-100 pb-4"
-              : "max-h-0 opacity-0 overflow-hidden"
-          }`}
+              ? "max-h-96 opacity-100 visible"
+              : "max-h-0 opacity-0 invisible"
+          } overflow-hidden`}
         >
-          <nav className="flex flex-col space-y-2 pt-4 border-t border-gray-800">
+          <nav className="py-4 space-y-2">
             {isAuthenticated ? (
               // Authenticated user mobile navigation
               <>
@@ -148,9 +173,25 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                   <BookOpen className="w-5 h-5" />
                   <span>Courses</span>
                 </Link>
+                <Link
+                  to="/cart"
+                  onClick={closeMobileMenu}
+                  className={`${getMobileLinkClasses("/cart")} relative`}
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>Cart</span>
+                  {/* {cartItemsCount > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center ml-auto">
+                      {cartItemsCount}
+                    </span>
+                  )} */}
+                </Link>
                 <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-3 text-gray-300 hover:text-red-400 hover:bg-gray-800 px-4 py-3 rounded-lg transition-all duration-200 text-left w-fit"
+                  onClick={() => {
+                    handleLogout();
+                    closeMobileMenu();
+                  }}
+                  className="w-full flex items-center space-x-3 text-gray-300 hover:text-red-400 hover:bg-gray-800 px-4 py-3 rounded-lg transition-all duration-200"
                 >
                   <LogOut className="w-5 h-5" />
                   <span>Logout</span>
