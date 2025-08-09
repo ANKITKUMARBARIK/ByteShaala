@@ -103,7 +103,7 @@ const CourseDetails = () => {
   return (
     <div className="min-h-screen text-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-900 py-12">
+      <div className="bg-gray-900 py-12">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Left Content */}
@@ -233,7 +233,7 @@ const CourseDetails = () => {
           {/* Left Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* What You'll Learn */}
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-6">
                 What you&apos;ll learn
               </h2>
@@ -248,7 +248,7 @@ const CourseDetails = () => {
             </div>
 
             {/* Course Content with ShadCN Accordion */}
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-6">Course content</h2>
               <div className="mb-6 text-gray-300">
                 {course.courseContent.length} sections •{" "}
@@ -302,7 +302,7 @@ const CourseDetails = () => {
             </div>
 
             {/* Requirements */}
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold mb-6">Requirements</h2>
               <ul className="space-y-3">
                 {course.requirements.map((requirement, index) => (
@@ -317,7 +317,7 @@ const CourseDetails = () => {
 
           {/* Right Sidebar - Additional Info */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-900 rounded-lg p-6">
               <h3 className="text-xl font-bold mb-4">Course includes:</h3>
               <div className="space-y-3 text-gray-300">
                 <div className="flex items-center space-x-3">

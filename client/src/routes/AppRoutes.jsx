@@ -105,9 +105,9 @@ function LayoutWrapper({ nonAuthRoutes }) {
       // If cookies are cleared but AuthContext hasn't updated yet, allow login
       return <NonAuthLayout />;
     }
-    // For courses page, allow both authenticated and non-authenticated users
-    if (location.pathname === "/courses") {
-      // Authenticated users accessing courses should use AuthLayout
+    // For course detail pages, courses page, allow both authenticated and non-authenticated users
+    if (location.pathname.startsWith("/courses")) {
+      // Authenticated users accessing course details should use AuthLayout
       return <AuthLayout />;
     }
     return <Navigate to="/dashboard" replace />;
