@@ -5,7 +5,7 @@ export const courseApi = baseApi.injectEndpoints({
     // Get all courses with optional filters
     getCourses: builder.query({
       query: (filters = {}) => {
-        let queryString = "courses";
+        let queryString = "course/get-all-courses";
         const params = new URLSearchParams();
 
         if (filters.search) params.append("search", filters.search);
@@ -28,14 +28,14 @@ export const courseApi = baseApi.injectEndpoints({
 
     // Get a single course by ID
     getCourseById: builder.query({
-      query: (id) => `courses/${id}`,
+      query: (id) => `course/get-course/${id}`,
       providesTags: (result, error, id) => [{ type: "Courses", id }],
     }),
 
     // Create a new course (admin only)
     createCourse: builder.mutation({
       query: (courseData) => ({
-        url: "courses",
+        url: "course/create-course",
         method: "POST",
         body: courseData,
       }),
@@ -45,7 +45,7 @@ export const courseApi = baseApi.injectEndpoints({
     // Update an existing course (admin only)
     updateCourse: builder.mutation({
       query: ({ id, ...courseData }) => ({
-        url: `courses/${id}`,
+        url: `course/update-course/${id}`,
         method: "PUT",
         body: courseData,
       }),
@@ -58,23 +58,10 @@ export const courseApi = baseApi.injectEndpoints({
     // Delete a course (admin only)
     deleteCourse: builder.mutation({
       query: (id) => ({
-        url: `courses/${id}`,
+        url: `course/delete-course/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Courses"],
-    }),
-
-    // Change course status (draft/active) (admin only)
-    changeCourseStatus: builder.mutation({
-      query: ({ id, status }) => ({
-        url: `courses/${id}/status`,
-        method: "PATCH",
-        body: { status },
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Courses", id },
-        "Courses",
-      ],
     }),
   }),
 });
@@ -85,5 +72,4 @@ export const {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
-  useChangeCourseStatusMutation,
 } = courseApi;
