@@ -5,150 +5,155 @@ import { uploadOnCloudinary } from "../services/cloudinary.service.js";
 import Course from "../models/course.model.js";
 
 export const createCourse = asyncHandler(async (req, res) => {
-    const {
-        title,
-        description,
-        category,
-        slug,
-        price,
-        originalPrice,
-        currency,
-        language,
-        level,
-        tags,
-    } = req.body;
+  // Parse the JSON payload from form-data
+  const payloadObj = JSON.parse(req.body.payloadObj || "{}");
 
-    const existedCourse = await Course.findOne({ slug });
-    if (existedCourse)
-        throw new ApiError(409, "course with this slug already exists");
+  const {
+    title,
+    description,
+    category,
+    slug,
+    price,
+    originalPrice,
+    currency,
+    language,
+    level,
+    tags,
+    duration,
+    averageRating,
+    requirements,
+    learningPoints,
+    courseContent,
+  } = payloadObj;
 
-    let thumbnailLocalPath = req.file?.buffer;
-    if (!thumbnailLocalPath)
-        throw new ApiError(400, "thumbnail file is missing");
+  const existedCourse = await Course.findOne({ slug });
+  if (existedCourse)
+    throw new ApiError(409, "course with this slug already exists");
 
-    const thumbnailImage = await uploadOnCloudinary(thumbnailLocalPath);
-    if (!thumbnailImage?.url)
-        throw new ApiError(500, "error while uploading on thumbnail");
+  // Handle thumbnail file upload
+  let thumbnailLocalPath = req.file?.buffer;
+  if (!thumbnailLocalPath) throw new ApiError(400, "thumbnail file is missing");
 
-    const course = new Course({
-        title: title.trim(),
-        description: description.trim(),
-        category: category.trim(),
-        slug: slug.trim(),
-        price,
-        originalPrice,
-        currency,
-        language,
-        level,
-        tags,
-        thumbnail: thumbnailImage.url,
-        instructor: req.user?._id,
-    });
+  const thumbnailImage = await uploadOnCloudinary(thumbnailLocalPath);
+  if (!thumbnailImage?.url)
+    throw new ApiError(500, "error while uploading thumbnail");
 
-    const createdCourse = await course.save();
-    if (!createdCourse)
-        throw new ApiError(500, "course creation failed, please try again");
+  const course = new Course({
+    title: title?.trim(),
+    description: description?.trim(),
+    category: category?.trim(),
+    slug: slug?.trim(),
+    price,
+    originalPrice,
+    currency,
+    language,
+    level,
+    duration,
+    averageRating: averageRating || 0,
+    requirements: requirements || [],
+    learningPoints: learningPoints || [],
+    courseContent: courseContent || [],
+    tags: tags || [],
+    thumbnail: thumbnailImage.url,
+    instructor: req.user?._id,
+  });
 
-    return res
-        .status(201)
-        .json(
-            new ApiResponse(201, createdCourse, "course created successfully")
-        );
+  const createdCourse = await course.save();
+  if (!createdCourse)
+    throw new ApiError(500, "course creation failed, please try again");
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, createdCourse, "course created successfully"));
 });
 
 export const updateCourse = asyncHandler(async (req, res) => {
-    const { courseId } = req.params;
-    const {
-        title,
-        description,
-        category,
-        slug,
-        price,
-        originalPrice,
-        currency,
-        language,
-        level,
-        tags,
-    } = req.body;
+  const { courseId } = req.params;
+  const {
+    title,
+    description,
+    category,
+    slug,
+    price,
+    originalPrice,
+    currency,
+    language,
+    level,
+    tags,
+  } = req.body;
 
-    const existedCourse = await Course.findById(courseId);
-    if (!existedCourse) {
-        throw new ApiError(404, "course not found");
-    }
+  const existedCourse = await Course.findById(courseId);
+  if (!existedCourse) {
+    throw new ApiError(404, "course not found");
+  }
 
-    let thumbnailLocalPath = req.file?.buffer;
-    let thumbnailImage;
-    if (thumbnailLocalPath) {
-        thumbnailImage = await uploadOnCloudinary(thumbnailLocalPath);
-        if (!thumbnailImage?.url)
-            throw new ApiError(500, "error while uploading on thumbnail");
-    }
+  let thumbnailLocalPath = req.file?.buffer;
+  let thumbnailImage;
+  if (thumbnailLocalPath) {
+    thumbnailImage = await uploadOnCloudinary(thumbnailLocalPath);
+    if (!thumbnailImage?.url)
+      throw new ApiError(500, "error while uploading on thumbnail");
+  }
 
-    const updateFields = {
-        title,
-        description,
-        category,
-        slug,
-        price,
-        originalPrice,
-        currency,
-        language,
-        level,
-        tags,
-    };
+  const updateFields = {
+    title,
+    description,
+    category,
+    slug,
+    price,
+    originalPrice,
+    currency,
+    language,
+    level,
+    tags,
+  };
 
-    if (thumbnailImage?.url) updateFields.thumbnail = thumbnailImage.url;
+  if (thumbnailImage?.url) updateFields.thumbnail = thumbnailImage.url;
 
-    const updatedCourse = await Course.findByIdAndUpdate(
-        courseId,
-        { $set: updateFields },
-        { new: true, runValidators: true }
-    );
+  const updatedCourse = await Course.findByIdAndUpdate(
+    courseId,
+    { $set: updateFields },
+    { new: true, runValidators: true }
+  );
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, updatedCourse, "course updated successfully")
-        );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedCourse, "course updated successfully"));
 });
 
 export const deleteCourse = asyncHandler(async (req, res) => {
-    const { courseId } = req.params;
+  const { courseId } = req.params;
 
-    const deletedCourse = await Course.findByIdAndDelete(courseId);
-    if (!deletedCourse) {
-        throw new ApiError(404, "course not found");
-    }
+  const deletedCourse = await Course.findByIdAndDelete(courseId);
+  if (!deletedCourse) {
+    throw new ApiError(404, "course not found");
+  }
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, {}, "course deleted successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "course deleted successfully"));
 });
 
 export const getAllCourses = asyncHandler(async (req, res) => {
-    const existedCourse = await Course.find({}).sort("-createdAt");
-    if (!existedCourse) {
-        throw new ApiError(404, "course not found");
-    }
+  const existedCourse = await Course.find({}).sort("-createdAt");
+  if (!existedCourse) {
+    throw new ApiError(404, "course not found");
+  }
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, existedCourse, "courses fetched successfully")
-        );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, existedCourse, "courses fetched successfully"));
 });
 
 export const getCourseById = asyncHandler(async (req, res) => {
-    const { courseId } = req.params;
+  const { slug } = req.params;
 
-    const existedCourse = await Course.findById(courseId);
-    if (!existedCourse) {
-        throw new ApiError(404, "course not found");
-    }
+  const existedCourse = await Course.findOne({ slug });
+  if (!existedCourse) {
+    throw new ApiError(404, "course not found");
+  }
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, existedCourse, "course fetched successfully")
-        );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, existedCourse, "course fetched successfully"));
 });
