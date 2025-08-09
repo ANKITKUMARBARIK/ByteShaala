@@ -29,7 +29,7 @@ router
   );
 
 router
-  .route("/update-course/:courseId")
+  .route("/update-course/:slug")
   .put(
     attachUser,
     verifyAuthorization(ROLES.ADMIN),
