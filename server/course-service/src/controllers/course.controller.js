@@ -13,7 +13,6 @@ export const createCourse = asyncHandler(async (req, res) => {
         title,
         description,
         category,
-        slug,
         price,
         originalPrice,
         currency,
@@ -26,6 +25,8 @@ export const createCourse = asyncHandler(async (req, res) => {
         learningPoints,
         courseContent,
     } = payloadObj;
+
+    const slug = slugify(title.trim(), { lower: true, strict: true });
 
     const existedCourse = await Course.findOne({ slug });
     if (existedCourse)
@@ -44,7 +45,7 @@ export const createCourse = asyncHandler(async (req, res) => {
         title: title?.trim(),
         description: description?.trim(),
         category: category?.trim(),
-        slug: slug?.trim(),
+        slug,
         price,
         originalPrice,
         currency,
