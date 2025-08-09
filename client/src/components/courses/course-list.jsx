@@ -2,11 +2,10 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { allCourses } from "./data";
-
+import { useGetCoursesQuery } from "@/actions/courseActions";
+import { useAddToCartMutation } from "@/actions/cartActions";
 import Pagination from "@/components/common/pagination";
 import CourseCard from "@/components/dashboard/course-card";
-import { useAddToCartMutation } from "@/actions/cartActions";
 
 const CourseList = () => {
   const navigate = useNavigate();
@@ -16,23 +15,32 @@ const CourseList = () => {
   const [addingCourseId, setAddingCourseId] = useState(null);
   const itemsPerPage = 9;
 
-  // Filter courses based on search term
-  const filteredCourses = useMemo(() => {
-    return allCourses.filter(
-      (course) =>
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
+  // Fetch courses from API
+  const {
+    data: coursesData,
+    isLoading,
+    error,
+  } = useGetCoursesQuery({
+    search: searchTerm,
+  });
+
+  const courses = coursesData?.data || coursesData || [];
+
+  // Filter courses based on search term (client-side filtering as backup)
+  // const filteredCourses = useMemo(() => {
+  //   if (!courses) return [];
+  //   return courses.filter(
+  //     (course) =>
+  //       course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       course.instructor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       course.category?.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  // }, [courses, searchTerm]);
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedCourses = filteredCourses.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const totalPages = Math.ceil(courses.length / itemsPerPage);
+  // const startIndex = (currentPage - 1) * itemsPerPage;
+  // const paginatedCourses = courses.slice(startIndex, startIndex + itemsPerPage);
 
   // Reset to first page when search changes
   React.useEffect(() => {
@@ -40,7 +48,7 @@ const CourseList = () => {
   }, [searchTerm]);
 
   const handleCourseClick = (course) => {
-    navigate(`/courses/${course.id}`);
+    navigate(`/courses/${course.slug}`);
   };
 
   const handleAddToCart = async (course) => {
@@ -58,6 +66,33 @@ const CourseList = () => {
       setAddingCourseId(null);
     }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center py-12">
+          <div className="text-white text-lg">Loading courses...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <div className="text-red-400 text-lg mb-2">
+            Failed to load courses
+          </div>
+          <p className="text-gray-500">
+            {error?.data?.message || "Please try again later."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -93,7 +128,7 @@ const CourseList = () => {
       </div>
 
       {/* Results Info */}
-      {searchTerm && (
+      {/* {searchTerm && (
         <div className="mb-6">
           <p className="text-gray-400">
             Found {filteredCourses.length} course
@@ -101,13 +136,13 @@ const CourseList = () => {
             {searchTerm && ` for "${searchTerm}"`}
           </p>
         </div>
-      )}
+      )} */}
 
       {/* Course Grid */}
-      {paginatedCourses.length > 0 ? (
+      {courses.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {paginatedCourses.map((course) => (
+            {courses.map((course) => (
               <CourseCard
                 key={course.id}
                 course={course}
@@ -127,7 +162,7 @@ const CourseList = () => {
             totalPages={totalPages}
             onPageChange={setCurrentPage}
             itemsPerPage={itemsPerPage}
-            totalItems={filteredCourses.length}
+            totalItems={courses.length}
           />
         </>
       ) : (

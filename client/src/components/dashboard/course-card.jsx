@@ -15,7 +15,7 @@ const CourseCard = ({
 }) => {
   const {
     title,
-    image,
+    thumbnail,
     progress,
     instructor,
     category,
@@ -32,7 +32,7 @@ const CourseCard = ({
     >
       {/* Course Image with Progress */}
       <div className="relative">
-        <img src={image} alt={title} className="w-full h-48 object-cover" />
+        <img src={thumbnail} alt={title} className="w-full h-48 object-cover" />
 
         {/* Progress Circle - Only show if showProgress is true and progress exists */}
         {showProgress && progress !== undefined && (
