@@ -18,11 +18,11 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
   const location = useLocation();
 
   // Get cart data for authenticated users
-  // const { data: cartData } = useGetCartQuery(undefined, {
-  //   skip: !isAuthenticated, // Only fetch cart data if user is authenticated
-  // });
+  const { data: cartData } = useGetCartQuery(undefined, {
+    skip: !isAuthenticated, // Only fetch cart data if user is authenticated
+  });
 
-  // const cartItemsCount = cartData?.items?.length || 0;
+  const cartItemsCount = cartData?.data?.length || 0;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -95,11 +95,11 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                 >
                   <ShoppingCart className="w-4 h-4" />
                   <span>Cart</span>
-                  {/* {cartItemsCount > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#646cff] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cartItemsCount}
                     </span>
-                  )} */}
+                  )}
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -180,11 +180,11 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                 >
                   <ShoppingCart className="w-5 h-5" />
                   <span>Cart</span>
-                  {/* {cartItemsCount > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center ml-auto">
+                  {cartItemsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-[#646cff] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cartItemsCount}
                     </span>
-                  )} */}
+                  )}
                 </Link>
                 <button
                   onClick={() => {

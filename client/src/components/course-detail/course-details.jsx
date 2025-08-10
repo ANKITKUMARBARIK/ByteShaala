@@ -28,7 +28,7 @@ const CourseDetails = () => {
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(course.id).unwrap();
+      await addToCart(course._id).unwrap();
       toast.success("Course added to cart!");
     } catch (error) {
       if (error?.data?.message) {
