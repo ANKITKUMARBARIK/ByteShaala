@@ -6,37 +6,40 @@ import CartCard from "./components/cart-card";
 import CartSummary from "./components/cart-summary";
 
 import {
-  // useGetCartQuery,
+  useGetCartQuery,
   useRemoveFromCartMutation,
   useClearCartMutation,
 } from "../../actions/cartActions";
-import { allCourses } from "../../components/courses/data";
+import { useGetCoursesQuery } from "../../actions/courseActions";
 
 const CartSection = () => {
-  // const { data: cartData, isLoading, error } = useGetCartQuery();
+  const {
+    data: cartData,
+    isLoading: cartLoading,
+    error: cartError,
+  } = useGetCartQuery();
+  const { data: coursesData, isLoading: coursesLoading } = useGetCoursesQuery();
   const [removeFromCart] = useRemoveFromCartMutation();
   const [clearCart] = useClearCartMutation();
 
-  // Mock cart data for development (replace with actual API data)
-  const mockCartItems = [
-    { courseId: 1, addedAt: new Date().toISOString() },
-    { courseId: 2, addedAt: new Date().toISOString() },
-    { courseId: 3, addedAt: new Date().toISOString() },
-  ];
+  const isLoading = cartLoading || coursesLoading;
 
-  const cartItems = mockCartItems;
-  const isLoading = false; // Set to false for demo
+  // Extract cart items and courses data
+  const cartItems = cartData?.data || cartData || [];
+  const allCourses = coursesData?.data || coursesData || [];
 
   // Get course details for cart items
   const cartCourses = cartItems
     .map((item) => {
-      const course = allCourses.find((c) => c.id === item.courseId);
-      return { ...course, addedAt: item.addedAt };
+      const course = allCourses.find(
+        (c) => c.id === item.courseId || c._id === item.courseId
+      );
+      return course ? { ...course, addedAt: item.addedAt } : null;
     })
     .filter(Boolean);
 
   const totalPrice = cartCourses.reduce(
-    (sum, course) => sum + (course.discountPrice || 0),
+    (sum, course) => sum + (course.price || 0),
     0
   );
   const totalOriginalPrice = cartCourses.reduce(
@@ -50,7 +53,7 @@ const CartSection = () => {
       await removeFromCart(courseId).unwrap();
       toast.success("Course removed from cart");
     } catch (error) {
-      toast.error("Failed to remove course from cart");
+      toast.error(error?.data?.message || "Failed to remove course from cart");
     }
   };
 
@@ -59,7 +62,7 @@ const CartSection = () => {
       await clearCart().unwrap();
       toast.success("Cart cleared successfully");
     } catch (error) {
-      toast.error("Failed to clear cart");
+      toast.error(error?.data?.message || "Failed to clear cart");
     }
   };
 
@@ -67,6 +70,20 @@ const CartSection = () => {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-white text-lg">Loading cart...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (cartError) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-lg mb-2">Failed to load cart</div>
+          <p className="text-gray-500">
+            {cartError?.data?.message || "Please try again later."}
+          </p>
+        </div>
       </div>
     );
   }

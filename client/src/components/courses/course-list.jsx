@@ -53,8 +53,8 @@ const CourseList = () => {
 
   const handleAddToCart = async (course) => {
     try {
-      setAddingCourseId(course.id);
-      await addToCart(course.id).unwrap();
+      setAddingCourseId(course._id);
+      await addToCart(course._id).unwrap();
       toast.success("Course added to cart!");
     } catch (error) {
       if (error?.data?.message) {

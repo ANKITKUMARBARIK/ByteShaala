@@ -1,30 +1,18 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "../store/api/baseApi";
 
 // Create the cart API slice
-export const cartApi = createApi({
-  reducerPath: "cartApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8888/api/v1/cart",
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.token;
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
-  tagTypes: ["Cart"],
+export const cartApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get user's cart
     getCart: builder.query({
-      query: () => "",
+      query: () => "cart/get-cart",
       providesTags: ["Cart"],
     }),
 
     // Add course to cart
     addToCart: builder.mutation({
       query: (courseId) => ({
-        url: "",
+        url: "cart/add-cart",
         method: "POST",
         body: { courseId },
       }),
@@ -34,8 +22,9 @@ export const cartApi = createApi({
     // Remove course from cart
     removeFromCart: builder.mutation({
       query: (courseId) => ({
-        url: `/${courseId}`,
+        url: "cart/remove-cart",
         method: "DELETE",
+        body: { courseId },
       }),
       invalidatesTags: ["Cart"],
     }),
@@ -43,7 +32,7 @@ export const cartApi = createApi({
     // Clear entire cart
     clearCart: builder.mutation({
       query: () => ({
-        url: "/clear",
+        url: "cart/clear-cart",
         method: "DELETE",
       }),
       invalidatesTags: ["Cart"],
