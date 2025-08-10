@@ -5,6 +5,7 @@ import {
   deleteCourse,
   getAllCourses,
   getCourseById,
+  getCourseByObjectId,
 } from "../controllers/course.controller.js";
 import validate from "../middlewares/validate.middleware.js";
 import {
@@ -45,5 +46,8 @@ router
 router.route("/get-all-courses").get(getAllCourses);
 
 router.route("/get-course/:slug").get(getCourseById);
+
+// Backward compatibility route for cart service (uses ObjectId)
+router.route("/get-course-by-id/:courseId").get(getCourseByObjectId);
 
 export default router;

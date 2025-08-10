@@ -183,3 +183,16 @@ export const getCourseById = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, existedCourse, "course fetched successfully"));
 });
+
+export const getCourseByObjectId = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+
+  const existedCourse = await Course.findById(courseId);
+  if (!existedCourse) {
+    throw new ApiError(404, "course not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, existedCourse, "course fetched successfully"));
+});
