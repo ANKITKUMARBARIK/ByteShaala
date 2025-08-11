@@ -60,7 +60,6 @@ app.use(
 // course service
 app.use(
   "/api/v1/course",
-  verifyAuthentication,
   proxy(process.env.COURSE_SERVICE, {
     proxyReqPathResolver: (req) => {
       return `/api/v1/course${req.url}`;
