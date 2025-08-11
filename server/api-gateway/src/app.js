@@ -9,114 +9,107 @@ const app = express();
 
 // CORS configuration
 app.use(
-    cors({
-        origin: [process.env.FRONTEND_BASE_URL, "http://127.0.0.1:5173"],
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: [
-            "Content-Type",
-            "Authorization",
-            "Cookie",
-            "x-user-data",
-        ],
-    })
+  cors({
+    origin: [process.env.FRONTEND_BASE_URL, "http://127.0.0.1:5173"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "x-user-data"],
+  })
 );
 
 app.use(cookieParser());
 
 // auth service
 app.use(
-    "/api/v1/auth",
-    proxy(process.env.AUTH_SERVICE, {
-        proxyReqPathResolver: (req) => {
-            return `/api/v1/auth${req.url}`;
-        },
-        proxyErrorHandler: (err, res, next) => {
-            console.error("Auth Proxy Error:", err.message);
-            next(err);
-        },
-    })
+  "/api/v1/auth",
+  proxy(process.env.AUTH_SERVICE, {
+    proxyReqPathResolver: (req) => {
+      return `/api/v1/auth${req.url}`;
+    },
+    proxyErrorHandler: (err, res, next) => {
+      console.error("Auth Proxy Error:", err.message);
+      next(err);
+    },
+  })
 );
 
 // user service
 app.use(
-    "/api/v1/user",
-    verifyAuthentication,
-    proxy(process.env.USER_SERVICE, {
-        proxyReqPathResolver: (req) => {
-            return `/api/v1/user${req.url}`;
-        },
-        proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-            const user = srcReq.user;
-            if (user) {
-                proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
-                    JSON.stringify(user)
-                );
-            }
-            return proxyReqOpts;
-        },
-        proxyErrorHandler: (err, res, next) => {
-            console.error("User Proxy Error:", err.message);
-            next(err);
-        },
-    })
+  "/api/v1/user",
+  verifyAuthentication,
+  proxy(process.env.USER_SERVICE, {
+    proxyReqPathResolver: (req) => {
+      return `/api/v1/user${req.url}`;
+    },
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      const user = srcReq.user;
+      if (user) {
+        proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
+          JSON.stringify(user)
+        );
+      }
+      return proxyReqOpts;
+    },
+    proxyErrorHandler: (err, res, next) => {
+      console.error("User Proxy Error:", err.message);
+      next(err);
+    },
+  })
 );
 
 // course service
 app.use(
-    "/api/v1/course",
-    proxy(process.env.COURSE_SERVICE, {
-        proxyReqPathResolver: (req) => {
-            return `/api/v1/course${req.url}`;
-        },
-        proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-            const token =
-                srcReq.cookies?.accessToken ||
-                srcReq.header("Authorization")?.replace("Bearer ", "");
-            if (token) {
-                try {
-                    const decoded = jwt.verify(
-                        token,
-                        process.env.ACCESS_TOKEN_SECRET
-                    );
-                    proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
-                        JSON.stringify(decoded)
-                    );
-                } catch (err) {
-                    // invalid token — ignore for public routes
-                }
-            }
-            return proxyReqOpts;
-        },
-        proxyErrorHandler: (err, res, next) => {
-            console.error("Course Proxy Error:", err.message);
-            next(err);
-        },
-    })
+  "/api/v1/course",
+  verifyAuthentication,
+  proxy(process.env.COURSE_SERVICE, {
+    proxyReqPathResolver: (req) => {
+      return `/api/v1/course${req.url}`;
+    },
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      const token =
+        srcReq.cookies?.accessToken ||
+        srcReq.header("Authorization")?.replace("Bearer ", "");
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+          proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
+            JSON.stringify(decoded)
+          );
+        } catch (err) {
+          // invalid token — ignore for public routes
+        }
+      }
+      return proxyReqOpts;
+    },
+    proxyErrorHandler: (err, res, next) => {
+      console.error("Course Proxy Error:", err.message);
+      next(err);
+    },
+  })
 );
 
 // cart service
 app.use(
-    "/api/v1/cart",
-    verifyAuthentication,
-    proxy(process.env.CART_SERVICE, {
-        proxyReqPathResolver: (req) => {
-            return `/api/v1/cart${req.url}`;
-        },
-        proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
-            const user = srcReq.user;
-            if (user) {
-                proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
-                    JSON.stringify(user)
-                );
-            }
-            return proxyReqOpts;
-        },
-        proxyErrorHandler: (err, res, next) => {
-            console.error("Cart Proxy Error:", err.message);
-            next(err);
-        },
-    })
+  "/api/v1/cart",
+  verifyAuthentication,
+  proxy(process.env.CART_SERVICE, {
+    proxyReqPathResolver: (req) => {
+      return `/api/v1/cart${req.url}`;
+    },
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      const user = srcReq.user;
+      if (user) {
+        proxyReqOpts.headers["x-user-data"] = encodeURIComponent(
+          JSON.stringify(user)
+        );
+      }
+      return proxyReqOpts;
+    },
+    proxyErrorHandler: (err, res, next) => {
+      console.error("Cart Proxy Error:", err.message);
+      next(err);
+    },
+  })
 );
 
 export default app;
