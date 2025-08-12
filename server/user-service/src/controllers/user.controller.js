@@ -6,73 +6,74 @@ import publishMessage from "../rabbitmq/publish.js";
 import User from "../models/user.model.js";
 
 export const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const { oldPassword, newPassword, confirmPassword } = req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
 
-    await publishMessage("user_exchange", "user.password.changed", {
-        userId: req.user._id,
-        oldPassword,
-        newPassword,
-        confirmPassword,
-    });
+  await publishMessage("user_exchange", "user.password.changed", {
+    userId: req.user._id,
+    oldPassword,
+    newPassword,
+    confirmPassword,
+  });
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                {},
-                "Password change will proceed only if the old password is correct"
-            )
-        );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Password change will proceed only if the old password is correct"
+      )
+    );
 });
 
 export const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { firstName, lastName } = req.body;
+  // Parse JSON payload from form-data
+  const payloadObj = JSON.parse(req.body.payloadObj || "{}");
+  const { firstName, lastName } = payloadObj;
 
-    let avatarLocalPath = req.file?.buffer;
-    // if (!avatarLocalPath) throw new ApiError(400, "avatar file is missing");
+  let avatarLocalPath = req.file?.buffer;
+  // if (!avatarLocalPath) throw new ApiError(400, "avatar file is missing");
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
-    // if (!avatar?.url)
-    //     throw new ApiError(401, "error while uploading on avatar");
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  // if (!avatar?.url)
+  //     throw new ApiError(401, "error while uploading on avatar");
 
-    const existedUser = await User.findOneAndUpdate(
-        { userId: req.user?._id },
-        { $set: { firstName, lastName, avatar: avatar?.url || "" } },
-        { new: true }
+  const updateFields = {};
+  if (firstName) updateFields.firstName = firstName;
+  if (lastName) updateFields.lastName = lastName;
+  if (avatar?.url) updateFields.avatar = avatar.url;
+
+  const existedUser = await User.findOneAndUpdate(
+    { userId: req.user?._id },
+    { $set: updateFields },
+    { new: true }
+  );
+
+  if (!existedUser)
+    throw new ApiError(401, "something wrong while updating account");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, existedUser, "account details updated successfully")
     );
-
-    if (!existedUser)
-        throw new ApiError(401, "something wrong while updating account");
-
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                existedUser,
-                "account details updated successfully"
-            )
-        );
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(200, req.user, "current user fetched successfully")
-        );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "current user fetched successfully"));
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
-    const existedUser = await User.findOneAndDelete({ userId: req.user?._id });
-    if (!existedUser) throw new ApiError(404, "user not found");
+  const existedUser = await User.findOneAndDelete({ userId: req.user?._id });
+  if (!existedUser) throw new ApiError(404, "user not found");
 
-    await publishMessage("user_exchange", "user.deleted", {
-        userId: existedUser.userId,
-    });
+  await publishMessage("user_exchange", "user.deleted", {
+    userId: existedUser.userId,
+  });
 
-    return res
-        .status(200)
-        .json(new ApiResponse(200, {}, "current user deleted successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "current user deleted successfully"));
 });
