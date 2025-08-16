@@ -2,18 +2,18 @@ import { baseApi } from "../store/api/baseApi";
 
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Get user profile
-    getProfile: builder.query({
-      query: () => "profile",
+    // Get current user profile
+    getUserProfile: builder.query({
+      query: () => "user/current-user",
       providesTags: ["Profile"],
     }),
 
-    // Update user profile
-    updateProfile: builder.mutation({
-      query: (profileData) => ({
-        url: "profile",
-        method: "PUT",
-        body: profileData,
+    // Update user account details (with avatar upload support)
+    updateAccount: builder.mutation({
+      query: (formData) => ({
+        url: "user/update-account",
+        method: "PATCH",
+        body: formData,
       }),
       invalidatesTags: ["Profile"],
     }),
@@ -21,40 +21,26 @@ export const profileApi = baseApi.injectEndpoints({
     // Change password
     changePassword: builder.mutation({
       query: (passwordData) => ({
-        url: "profile/change-password",
-        method: "POST",
+        url: "user/change-password",
+        method: "PATCH",
         body: passwordData,
       }),
     }),
 
-    // Get user's purchased courses
-    getPurchasedCourses: builder.query({
-      query: () => "profile/courses",
-      providesTags: ["PurchasedCourses"],
-    }),
-
-    // Upload profile avatar
-    uploadAvatar: builder.mutation({
-      query: (file) => {
-        const formData = new FormData();
-        formData.append("avatar", file);
-
-        return {
-          url: "profile/avatar",
-          method: "POST",
-          body: formData,
-          formData: true,
-        };
-      },
+    // Delete user account
+    deleteUser: builder.mutation({
+      query: () => ({
+        url: "user/delete-user",
+        method: "DELETE",
+      }),
       invalidatesTags: ["Profile"],
     }),
   }),
 });
 
 export const {
-  useGetProfileQuery,
-  useUpdateProfileMutation,
+  useGetUserProfileQuery,
+  useUpdateAccountMutation,
   useChangePasswordMutation,
-  useGetPurchasedCoursesQuery,
-  useUploadAvatarMutation,
+  useDeleteUserMutation,
 } = profileApi;
