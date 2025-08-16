@@ -220,7 +220,7 @@ export function ProfileForm({ className, ...props }) {
           <div className="relative">
             <div
               onClick={handleAvatarClick}
-              className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden"
+              className="w-24 h-24 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-md font-bold cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden"
             >
               {avatarPreview ? (
                 <img
@@ -252,9 +252,9 @@ export function ProfileForm({ className, ...props }) {
 
           {/* User Info */}
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">
+            <h3 className="text-xl font-bold text-white mb-1">
               {user?.firstName} {user?.lastName}
-            </h2>
+            </h3>
             <p className="text-gray-400 mb-2">{user?.email}</p>
             <p className="text-sm text-gray-500">
               Click on avatar to change profile picture
