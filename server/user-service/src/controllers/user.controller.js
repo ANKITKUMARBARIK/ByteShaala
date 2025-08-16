@@ -102,8 +102,6 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
   // if (!avatarLocalPath) throw new ApiError(400, "avatar file is missing");
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  // if (!avatar?.url)
-  //     throw new ApiError(401, "error while uploading on avatar");
 
   const updateFields = {};
   if (firstName) updateFields.firstName = firstName;
@@ -132,6 +130,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   const user = {
     firstName: getUser.firstName,
     lastName: getUser.lastName,
+    avatar: getUser.avatar,
     ...req.user,
   };
 
