@@ -1,168 +1,48 @@
-# # This file tells Docker "start all these services together"
-# # whenever we create compose file we don't need to create network manually by default they are referencing each other.
-# version: '3.8'
-
-# services:
-#   mongodb:
-#     image: "mongo"
-#     container_name: mongo-container  # name of container
-#     ports:
-#       - 27017:27017  # port mapping
-#     volumes:
-#       - mongodb_data:/data/db  # attach volume
-#     healthcheck:
-#       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-#       interval: 10s
-#       timeout: 10s
-#       retries: 5
-#       start_period: 40s
-
-#   mongo-express:
-#     image: mongo-express
-#     container_name: mongo-express-container
-#     ports:
-#       - 8081:8081
-#     environment:
-#       ME_CONFIG_MONGODB_SERVER: mongodb
-#       ME_CONFIG_MONGODB_PORT: 27017
-#       ME_CONFIG_BASICAUTH_USERNAME: admin
-#       ME_CONFIG_BASICAUTH_PASSWORD: admin
-#     depends_on:
-#       - mongodb
-
-#   rabbitmq:
-#     image: "rabbitmq:3-management"
-#     container_name: rabbitmq-container
-#     ports:
-#       - 5672:5672
-#       - 15672:15672
-#     healthcheck:
-#       test: ["CMD", "rabbitmqctl", "status"]
-#       interval: 10s
-#       timeout: 10s
-#       retries: 5
-#       start_period: 40s
-
-#   api-gateway:
-#     build: ./api-gateway
-#     container_name: api-gateway-container
-#     ports:
-#       - 8888:8888
-#     depends_on:
-#       - auth-service
-#       - user-service
-#     environment:
-#       PORT: "8888"
-#       AUTH_SERVICE: "http://auth-service:5001"
-#       USER_SERVICE: "http://user-service:5002"
-#       COURSE_SERVICE: "http://course-service:5003"
-#       CART_SERVICE: "http://cart-service:5004"
-#       ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
-#       FRONTEND_BASE_URL: "http://localhost:5173"
-
-#   auth-service:
-#     build: ./auth-service
-#     container_name: auth-service-container
-#     ports:
-#       - 5001:5001
-#     depends_on:
-#       rabbitmq:
-#         condition: service_healthy
-#       mongodb:
-#         condition: service_started
-#     environment:
-#       MONGODB_URI: "mongodb://mongodb:27017/auth-service"
-#       RABBITMQ_URL: "amqp://rabbitmq:5672"
-#       PORT: "5001"
-#       NODE_ENV: "development"
-#       ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
-#       ACCESS_TOKEN_EXPIRY: "1d"
-#       REFRESH_TOKEN_SECRET: "Q44EVvuve7RlsuvafmDw2jVxVG47HOmYMfoiRSkyiEmipb20CTRFBh8oEhxjcoO6"
-#       REFRESH_TOKEN_EXPIRY: "10d"
-#       ADMIN_EMAIL: "admin.dev@gmail.com"
-#       ADMIN_PASSWORD: "123456"
-
-#   user-service:
-#     build: ./user-service
-#     container_name: user-service-container
-#     ports:
-#       - 5002:5002
-#     depends_on:
-#       rabbitmq:
-#         condition: service_healthy
-#       mongodb:
-#         condition: service_started
-#     environment:
-#       MONGODB_URI: "mongodb://mongodb:27017/user-service"
-#       RABBITMQ_URL: "amqp://rabbitmq:5672"
-#       PORT: "5002"
-#       NODE_ENV: "development"
-#       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
-#       CLOUDINARY_API_KEY: "118319496188455"
-#       CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
-
-#   course-service:
-#     build: ./course-service
-#     container_name: course-service-container
-#     ports:
-#       - 5003:5003
-#     depends_on:
-#       mongodb:
-#         condition: service_started
-#     environment:
-#       MONGODB_URI: "mongodb://mongodb:27017/course-service"
-#       PORT: "5003"
-#       NODE_ENV: "development"
-#       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
-#       CLOUDINARY_API_KEY: "118319496188455"
-#       CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
-
-#   cart-service:
-#     build: ./cart-service
-#     container_name: cart-service-container
-#     ports:
-#       - 5004:5004
-#     depends_on:
-#       mongodb:
-#         condition: service_started
-#     environment:
-#       MONGODB_URI: "mongodb://mongodb:27017/cart-service"
-#       PORT: "5004"
-#       NODE_ENV: "development"
-#       GATEWAY_URL: "http://api-gateway:8888"
-
-#   notification-service:
-#     build: ./notification-service
-#     container_name: notification-service-container
-#     ports:
-#       - 5005:5005
-#     depends_on:
-#       rabbitmq:
-#         condition: service_healthy
-#     environment:
-#       RABBITMQ_URL: "amqp://rabbitmq:5672"
-#       PORT: "5005"
-#       FRONTEND_BASE_URL: "http://localhost:5173"
-#       APP_GMAIL: "ankitbarik.dev@gmail.com"
-#       APP_PASSWORD: "dxwqztzltqcqnbbw"
-
-# volumes:
-#   mongodb_data:
-
-
-
-
-
-
-
-# DEPLOY CONFIGURATION TESTING--------------------------->
-
-
 # This file tells Docker "start all these services together"
 # whenever we create compose file we don't need to create network manually by default they are referencing each other.
 version: '3.8'
 
 services:
+  mongodb:
+    image: "mongo"
+    container_name: mongo-container  # name of container
+    ports:
+      - 27017:27017  # port mapping
+    volumes:
+      - mongodb_data:/data/db  # attach volume
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-container
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - mongodb
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq-container
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
   api-gateway:
     build: ./api-gateway
     container_name: api-gateway-container
@@ -185,9 +65,14 @@ services:
     container_name: auth-service-container
     ports:
       - 5001:5001
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
-      MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/auth-service?retryWrites=true&w=majority"
-      RABBITMQ_URL: "amqps://yqafewqc:PY4D8vRWZSh_m1eBJGq1mVXyTH82g_zE@puffin.rmq2.cloudamqp.com/yqafewqc"
+      MONGODB_URI: "mongodb://mongodb:27017/auth-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
       PORT: "5001"
       NODE_ENV: "development"
       ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
@@ -202,9 +87,14 @@ services:
     container_name: user-service-container
     ports:
       - 5002:5002
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
     environment:
-      MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/user-service?retryWrites=true&w=majority"
-      RABBITMQ_URL: "amqps://yqafewqc:PY4D8vRWZSh_m1eBJGq1mVXyTH82g_zE@puffin.rmq2.cloudamqp.com/yqafewqc"
+      MONGODB_URI: "mongodb://mongodb:27017/user-service"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
       PORT: "5002"
       NODE_ENV: "development"
       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
@@ -216,8 +106,11 @@ services:
     container_name: course-service-container
     ports:
       - 5003:5003
+    depends_on:
+      mongodb:
+        condition: service_started
     environment:
-      MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/course-service?retryWrites=true&w=majority"
+      MONGODB_URI: "mongodb://mongodb:27017/course-service"
       PORT: "5003"
       NODE_ENV: "development"
       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
@@ -229,8 +122,11 @@ services:
     container_name: cart-service-container
     ports:
       - 5004:5004
+    depends_on:
+      mongodb:
+        condition: service_started
     environment:
-      MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/cart-service?retryWrites=true&w=majority"
+      MONGODB_URI: "mongodb://mongodb:27017/cart-service"
       PORT: "5004"
       NODE_ENV: "development"
       GATEWAY_URL: "http://api-gateway:8888"
@@ -240,12 +136,116 @@ services:
     container_name: notification-service-container
     ports:
       - 5005:5005
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     environment:
-      RABBITMQ_URL: "amqps://yqafewqc:PY4D8vRWZSh_m1eBJGq1mVXyTH82g_zE@puffin.rmq2.cloudamqp.com/yqafewqc"
+      RABBITMQ_URL: "amqp://rabbitmq:5672"
       PORT: "5005"
       FRONTEND_BASE_URL: "http://localhost:5173"
       APP_GMAIL: "ankitbarik.dev@gmail.com"
       APP_PASSWORD: "dxwqztzltqcqnbbw"
 
 volumes:
-  mongodb_data: {}
+  mongodb_data:
+
+
+
+
+
+
+
+# # DEPLOY CONFIGURATION TESTING--------------------------->
+
+
+# # This file tells Docker "start all these services together"
+# # whenever we create compose file we don't need to create network manually by default they are referencing each other.
+# version: '3.8'
+
+# services:
+#   api-gateway:
+#     build: ./api-gateway
+#     container_name: api-gateway-container
+#     ports:
+#       - 8888:8888
+#     depends_on:
+#       - auth-service
+#       - user-service
+#     environment:
+#       PORT: "8888"
+#       AUTH_SERVICE: "http://auth-service:5001"
+#       USER_SERVICE: "http://user-service:5002"
+#       COURSE_SERVICE: "http://course-service:5003"
+#       CART_SERVICE: "http://cart-service:5004"
+#       ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
+#       FRONTEND_BASE_URL: "http://localhost:5173"
+
+#   auth-service:
+#     build: ./auth-service
+#     container_name: auth-service-container
+#     ports:
+#       - 5001:5001
+#     environment:
+#       MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/auth-service?retryWrites=true&w=majority"
+#       RABBITMQ_URL: "amqps://yqafewqc:PY4D8vRWZSh_m1eBJGq1mVXyTH82g_zE@puffin.rmq2.cloudamqp.com/yqafewqc"
+#       PORT: "5001"
+#       NODE_ENV: "development"
+#       ACCESS_TOKEN_SECRET: "muSXtkpbKIhLymEblzzVefFjgAoBBIZdg0E70rEGh4TptgGtsJExrpY4wRvR9BiK"
+#       ACCESS_TOKEN_EXPIRY: "1d"
+#       REFRESH_TOKEN_SECRET: "Q44EVvuve7RlsuvafmDw2jVxVG47HOmYMfoiRSkyiEmipb20CTRFBh8oEhxjcoO6"
+#       REFRESH_TOKEN_EXPIRY: "10d"
+#       ADMIN_EMAIL: "admin.dev@gmail.com"
+#       ADMIN_PASSWORD: "123456"
+
+#   user-service:
+#     build: ./user-service
+#     container_name: user-service-container
+#     ports:
+#       - 5002:5002
+#     environment:
+#       MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/user-service?retryWrites=true&w=majority"
+#       RABBITMQ_URL: "amqps://yqafewqc:PY4D8vRWZSh_m1eBJGq1mVXyTH82g_zE@puffin.rmq2.cloudamqp.com/yqafewqc"
+#       PORT: "5002"
+#       NODE_ENV: "development"
+#       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
+#       CLOUDINARY_API_KEY: "118319496188455"
+#       CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
+
+#   course-service:
+#     build: ./course-service
+#     container_name: course-service-container
+#     ports:
+#       - 5003:5003
+#     environment:
+#       MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/course-service?retryWrites=true&w=majority"
+#       PORT: "5003"
+#       NODE_ENV: "development"
+#       CLOUDINARY_CLOUD_NAME: "ankitkumarbarik"
+#       CLOUDINARY_API_KEY: "118319496188455"
+#       CLOUDINARY_API_SECRET: "MXq_-Et-TEleocE55oGGZuWN3QU"
+
+#   cart-service:
+#     build: ./cart-service
+#     container_name: cart-service-container
+#     ports:
+#       - 5004:5004
+#     environment:
+#       MONGODB_URI: "mongodb+srv://byteshaala:obWCAWXyo3UPt2SP@cluster0.jyvb1s2.mongodb.net/cart-service?retryWrites=true&w=majority"
+#       PORT: "5004"
+#       NODE_ENV: "development"
+#       GATEWAY_URL: "http://api-gateway:8888"
+
+#   notification-service:
+#     build: ./notification-service
+#     container_name: notification-service-container
+#     ports:
+#       - 5005:5005
+#     environment:
+#       RABBITMQ_URL: "amqps://yqafewqc:PY4D8vRWZSh_m1eBJGq1mVXyTH82g_zE@puffin.rmq2.cloudamqp.com/yqafewqc"
+#       PORT: "5005"
+#       FRONTEND_BASE_URL: "http://localhost:5173"
+#       APP_GMAIL: "ankitbarik.dev@gmail.com"
+#       APP_PASSWORD: "dxwqztzltqcqnbbw"
+
+# volumes:
+#   mongodb_data: {}
