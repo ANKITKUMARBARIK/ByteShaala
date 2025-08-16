@@ -33,7 +33,6 @@ export const profileApi = baseApi.injectEndpoints({
         url: "user/delete-user",
         method: "DELETE",
       }),
-      invalidatesTags: ["Profile"],
     }),
   }),
 });
