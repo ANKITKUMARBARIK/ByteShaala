@@ -1,7 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Camera, User, Lock, Trash2 } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as yup from "yup";
 
@@ -13,6 +14,7 @@ import {
 } from "@/actions/profileActions";
 import CommonInput from "@/components/common/common-input";
 import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
 // Validation schemas
@@ -53,14 +55,11 @@ export function ProfileForm({ className, ...props }) {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   // API hooks
-  const {
-    data: userData,
-    isLoading: userLoading,
-    error: userError,
-  } = useGetUserProfileQuery();
-  //   const { data: userData, isLoading: userLoading } = useGetCurrentUserQuery();
+  const { data: userData, isLoading: userLoading } = useGetUserProfileQuery();
+  const { removeAuth } = useContext(AuthContext);
   const [updateAccount, { isLoading: updateLoading }] =
     useUpdateAccountMutation();
   const [changePassword, { isLoading: passwordLoading }] =
@@ -194,8 +193,9 @@ export function ProfileForm({ className, ...props }) {
       try {
         await deleteUser().unwrap();
         toast.success("Account deleted successfully!");
+        removeAuth();
         // Redirect to login or home page
-        window.location.href = "/login";
+        navigate("/login");
       } catch (error) {
         console.error("Account deletion error:", error);
         toast.error(error?.data?.message || "Failed to delete account");
