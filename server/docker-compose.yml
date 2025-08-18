@@ -51,6 +51,12 @@ services:
     depends_on:
       - auth-service
       - user-service
+    volumes:
+      # Mount source code for hot reloading
+      - ./api-gateway/src:/app/src
+      - ./api-gateway/package.json:/app/package.json
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
     environment:
       PORT: "8888"
       AUTH_SERVICE: "http://auth-service:5001"
@@ -70,6 +76,12 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_started
+    volumes:
+      # Mount source code for hot reloading
+      - ./auth-service/src:/app/src
+      - ./auth-service/package.json:/app/package.json
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/auth-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
@@ -92,6 +104,12 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_started
+    volumes:
+      # Mount source code for hot reloading
+      - ./user-service/src:/app/src
+      - ./user-service/package.json:/app/package.json
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/user-service"
       RABBITMQ_URL: "amqp://rabbitmq:5672"
@@ -109,6 +127,12 @@ services:
     depends_on:
       mongodb:
         condition: service_started
+    volumes:
+      # Mount source code for hot reloading
+      - ./course-service/src:/app/src
+      - ./course-service/package.json:/app/package.json
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/course-service"
       PORT: "5003"
@@ -125,6 +149,12 @@ services:
     depends_on:
       mongodb:
         condition: service_started
+    volumes:
+      # Mount source code for hot reloading
+      - ./cart-service/src:/app/src
+      - ./cart-service/package.json:/app/package.json
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
     environment:
       MONGODB_URI: "mongodb://mongodb:27017/cart-service"
       PORT: "5004"
@@ -139,6 +169,12 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    volumes:
+      # Mount source code for hot reloading
+      - ./notification-service/src:/app/src
+      - ./notification-service/package.json:/app/package.json
+      # Prevent node_modules from being overwritten
+      - /app/node_modules
     environment:
       RABBITMQ_URL: "amqp://rabbitmq:5672"
       PORT: "5005"
