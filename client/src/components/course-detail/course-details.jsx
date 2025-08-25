@@ -7,7 +7,7 @@ import {
   Calendar,
   CheckCircle,
 } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 import AdditionalInfo from "./components/additional-info";
@@ -16,13 +16,16 @@ import CoursePreview from "./components/course-preview";
 
 import { useAddToCartMutation } from "@/actions/cartActions";
 import { useGetCourseByIdQuery } from "@/actions/courseActions";
+import { useGetUserProfileQuery } from "@/actions/profileActions";
 
 const CourseDetails = () => {
   const { id } = useParams();
+  const location = useLocation();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
 
   // Fetch course by ID from API
   const { data: courseDetails, isLoading, error } = useGetCourseByIdQuery(id);
+  const { data: profileData } = useGetUserProfileQuery();
 
   const course = courseDetails?.data;
 
@@ -38,6 +41,15 @@ const CourseDetails = () => {
       }
     }
   };
+
+  // Determine if user owns the course
+  const enrolledCourses =
+    profileData?.data?.enrolledCourses || profileData?.enrolledCourses || [];
+  const isOwnedByProfile = enrolledCourses.some(
+    (c) => c?._id === course?._id || c?.slug === course?.slug
+  );
+  const isOwnedByState = Boolean(location.state?.fromEnrolled);
+  const isOwned = isOwnedByProfile || isOwnedByState;
 
   // Loading state
   if (isLoading) {
@@ -158,6 +170,7 @@ const CourseDetails = () => {
                 course={course}
                 handleAddToCart={handleAddToCart}
                 isAddingToCart={isAddingToCart}
+                isOwned={isOwned}
               />
             </div>
           </div>

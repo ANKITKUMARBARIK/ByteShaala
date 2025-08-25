@@ -1,63 +1,23 @@
-import React, { useContext } from "react";
-import { AuthContext } from "@/context/AuthContext";
-import CourseCard from "./course-card";
+import { User, Mail, Phone, BookOpen } from "lucide-react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
-// Dummy course data based on the screenshots
-const dummyCourses = [
-  {
-    id: 1,
-    title: "100x devs cohort",
-    instructor: "Harkirat Singh",
-    category: "0-100",
-    progress: 6,
-    image:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=300&fit=crop",
-    discord: true,
-  },
-  {
-    id: 2,
-    title: "Ad hoc classes",
-    instructor: "Harkirat Singh",
-    category: "Advanced",
-    progress: 0,
-    image:
-      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=300&fit=crop",
-    discord: true,
-  },
-  {
-    id: 3,
-    title: "Harnoor's Android cohort",
-    instructor: "Harnoor Singh",
-    category: "Android",
-    progress: 0,
-    image:
-      "https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?w=400&h=300&fit=crop",
-    discord: true,
-  },
-  {
-    id: 4,
-    title: "Machine Learning + MLOps course",
-    instructor: "Harkirat Singh",
-    category: "ML/AI",
-    progress: 0,
-    image:
-      "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop",
-    discord: true,
-  },
-  {
-    id: 5,
-    title: "DSA Classes",
-    instructor: "Harkirat Singh",
-    category: "Programming",
-    progress: 0,
-    image:
-      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=300&fit=crop",
-    discord: true,
-  },
-];
+import CourseCard from "./course-card";
+import InquiryForm from "./inquiry-form";
+import RecentActivity from "./recent-activity";
+import Testimonials from "./testimonials";
+
+import { useGetUserProfileQuery } from "@/actions/profileActions";
+import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/context/AuthContext";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
+  const { data: userData } = useGetUserProfileQuery();
+  const navigate = useNavigate();
+
+  const currentUser = userData?.data || userData || user;
+  const enrolledCourses = currentUser?.enrolledCourses || [];
 
   // Get current time for greeting
   const getCurrentGreeting = () => {
@@ -69,51 +29,116 @@ const Dashboard = () => {
 
   // Get user's first name or fallback
   const getUserName = () => {
-    if (user?.name) {
-      return user.name.split(" ")[0];
+    if (currentUser?.firstName) {
+      return currentUser.firstName;
+    }
+    if (currentUser?.name) {
+      return currentUser.name.split(" ")[0];
     }
     return "User";
   };
 
+  // Navigation handlers
+  const handleExplore = () => navigate("/courses");
+  const handleViewCourse = (course) => {
+    navigate(`/courses/${course.slug}`, { state: { fromEnrolled: true } });
+  };
+
+  // Normalize course for CourseCard if some fields are missing
+  const normalizeCourse = (c) => ({
+    ...c,
+    title: c?.title || "Untitled Course",
+    thumbnail:
+      c?.thumbnail ||
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=300&fit=crop",
+    category: c?.category || "Course",
+    instructor: c?.instructorName || c?.instructor || "",
+    progress: c?.progress, // optional; CourseCard hides if undefined
+  });
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header Section */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold text-white">
+        <h3 className="text-lg font-bold text-white">
           {getCurrentGreeting()} {getUserName()}
-        </h2>
+        </h3>
         <p className="text-gray-400 text-md">
           Welcome back to your learning journey
         </p>
       </div>
 
-      {/* Courses Section */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-white mb-6">Your Courses</h2>
-
-        {/* Course Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dummyCourses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
+      {/* User Details Card */}
+      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <div className="flex items-center space-x-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+            {currentUser?.firstName && currentUser?.lastName ? (
+              `${currentUser.firstName[0]}${currentUser.lastName[0]}`
+            ) : (
+              <User className="w-8 h-8" />
+            )}
+          </div>
+          <div className="flex-1">
+            <p className="text-lg font-semibold text-white">
+              {currentUser?.firstName && currentUser?.lastName
+                ? `${currentUser.firstName} ${currentUser.lastName}`
+                : currentUser?.name || "User Name"}
+            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0">
+              <div className="flex items-center text-gray-400">
+                <Mail className="w-4 h-4 mr-2" />
+                <span>{currentUser?.email || "user@example.com"}</span>
+              </div>
+              <div className="flex items-center text-gray-400">
+                <Phone className="w-4 h-4 mr-2" />
+                <span>{currentUser?.phoneNumber || "Not provided"}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Additional Section - Don't See Your Courses */}
-      {/* <div className="bg-gray-800 rounded-lg p-6 text-center">
-        <h3 className="text-xl font-semibold text-white mb-2">
-          Don&apos;t See Your Courses?
-        </h3>
-        <p className="text-gray-400 mb-4">
-          Try refreshing the database. If you are still facing issues,{" "}
-          <a href="#" className="text-blue-400 hover:text-blue-300 underline">
-            Contact us
-          </a>
-        </p>
-        <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-md transition-colors duration-200">
-          Refresh Database
-        </button>
-      </div> */}
+      {/* Courses Section */}
+      <div>
+        <h3 className="text-white mb-6">Your Courses</h3>
+
+        {enrolledCourses.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {enrolledCourses.map((course) => (
+              <CourseCard
+                key={course._id || course.id}
+                course={normalizeCourse(course)}
+                onButtonClick={handleViewCourse}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
+            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-white mb-2">
+              You don&apos;t have any courses yet
+            </h3>
+            <p className="text-gray-400 mb-6">
+              Start your learning journey by exploring our amazing courses
+            </p>
+            <Button
+              onClick={handleExplore}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              Explore Courses
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Testimonials Section */}
+      <Testimonials />
+
+      {/* Recent Activity Section */}
+      <RecentActivity />
+
+      {/* Inquiry Form Section */}
+      <InquiryForm courses={enrolledCourses} />
     </div>
   );
 };

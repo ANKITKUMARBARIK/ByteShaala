@@ -2,8 +2,8 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { useGetCoursesQuery } from "@/actions/courseActions";
 import { useAddToCartMutation } from "@/actions/cartActions";
+import { useGetCoursesQuery } from "@/actions/courseActions";
 import Pagination from "@/components/common/pagination";
 import CourseCard from "@/components/dashboard/course-card";
 
