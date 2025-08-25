@@ -191,7 +191,6 @@ export const getCourseByObjectId = asyncHandler(async (req, res) => {
   if (!existedCourse) {
     throw new ApiError(404, "course not found");
   }
-
   return res
     .status(200)
     .json(new ApiResponse(200, existedCourse, "course fetched successfully"));

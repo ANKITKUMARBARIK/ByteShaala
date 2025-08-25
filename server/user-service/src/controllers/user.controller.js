@@ -4,6 +4,7 @@ import ApiResponse from "../utils/ApiResponse.util.js";
 import { uploadOnCloudinary } from "../services/cloudinary.service.js";
 import publishMessage from "../rabbitmq/publish.js";
 import User from "../models/user.model.js";
+import axios from "axios";
 
 export const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -126,11 +127,31 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
   const getUser = await User.findOne({ userId: req.user?._id });
+
+  // Convert Mongoose document to plain object
+  const userObj = getUser.toObject();
+
+  if (userObj?.enrolledCourses?.length) {
+    const fullCourses = [];
+    for (let course of userObj.enrolledCourses) {
+      try {
+        const courses = await axios.get(
+          `http://course-service:5003/api/v1/course/get-course-by-id/${course}`
+        );
+        fullCourses.push(courses.data.data);
+      } catch (error) {
+        console.error(`Failed to fetch course ${course}:`, error.message);
+      }
+    }
+    userObj.enrolledCourses = fullCourses;
+  }
   if (!getUser) throw new ApiError(404, "user not found");
+
   const user = {
-    firstName: getUser.firstName,
-    lastName: getUser.lastName,
-    avatar: getUser.avatar,
+    firstName: userObj.firstName,
+    lastName: userObj.lastName,
+    avatar: userObj.avatar,
+    enrolledCourses: userObj.enrolledCourses, // Include enrolled courses
     ...req.user,
   };
 
