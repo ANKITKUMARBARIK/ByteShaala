@@ -1,6 +1,30 @@
 import { Schema, Types, model } from "mongoose";
 import slugify from "slugify";
 
+// review schema
+const reviewSchema = new Schema(
+    {
+        user: {
+            type: Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5,
+        },
+        comment: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+    },
+    { timestamps: true }
+);
+
+// course schema
 const courseSchema = new Schema(
     {
         title: {
@@ -101,6 +125,7 @@ const courseSchema = new Schema(
             ],
             default: [],
         },
+        reviews: [reviewSchema],
     },
     { timestamps: true }
 );
