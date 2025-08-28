@@ -7,20 +7,24 @@ import {
   Calendar,
   CheckCircle,
 } from "lucide-react";
+import { useContext } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 import AdditionalInfo from "./components/additional-info";
 import CourseContent from "./components/course-content";
 import CoursePreview from "./components/course-preview";
+import WriteReview from "./components/write-review";
 
 import { useAddToCartMutation } from "@/actions/cartActions";
 import { useGetCourseByIdQuery } from "@/actions/courseActions";
 import { useGetUserProfileQuery } from "@/actions/profileActions";
+import { AuthContext } from "@/context/AuthContext";
 
 const CourseDetails = () => {
   const { id } = useParams();
   const location = useLocation();
+  const { user } = useContext(AuthContext);
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
 
   // Fetch course by ID from API
@@ -28,6 +32,7 @@ const CourseDetails = () => {
   const { data: profileData } = useGetUserProfileQuery();
 
   const course = courseDetails?.data;
+  const currentUser = profileData?.data || profileData || user;
 
   const handleAddToCart = async () => {
     try {
@@ -50,6 +55,7 @@ const CourseDetails = () => {
   );
   const isOwnedByState = Boolean(location.state?.fromEnrolled);
   const isOwned = isOwnedByProfile || isOwnedByState;
+  const isAuthenticated = Boolean(currentUser);
 
   // Loading state
   if (isLoading) {
@@ -125,9 +131,9 @@ const CourseDetails = () => {
                   <span className="text-yellow-400 font-semibold">
                     {course?.averageRating}
                   </span>
-                  {/* <span className="text-gray-400">
-                    ({course.studentsCount.toLocaleString()} students)
-                  </span> */}
+                  <span className="text-gray-400">
+                    ({course?.reviews?.length} reviews)
+                  </span>
                 </div>
               </div>
 
@@ -212,6 +218,13 @@ const CourseDetails = () => {
                 ))}
               </ul>
             </div>
+
+            {/* Reviews Section */}
+            <WriteReview
+              isAuthenticated={isAuthenticated}
+              isOwned={isOwned}
+              course={course}
+            />
           </div>
 
           {/* Right Sidebar - Additional Info */}
