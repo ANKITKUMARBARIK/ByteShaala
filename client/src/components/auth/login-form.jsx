@@ -41,19 +41,26 @@ export function LoginForm({ className, ...props }) {
         // Update Redux store
         dispatch(
           loginSuccess({
-            user: result.user,
+            user: result.data.user,
             token: result?.data?.accessToken,
           })
         );
 
-        // Update AuthContext
+        // Update AuthContext with user data
         addAuth({
           token: result?.data?.accessToken,
           refToken: result?.data?.refreshToken,
+          user: result?.data?.user,
         });
 
         toast.success("Login successful!");
-        navigate("/dashboard");
+
+        // Redirect based on user role
+        if (result?.data?.user?.role === "ADMIN") {
+          navigate("/user-list");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         toast.error(result?.error?.message || "Login failed");
       }

@@ -33,7 +33,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   // Check if the error indicates token expiration
-  const isTokenExpired = result?.error?.status === 401;
+  const isTokenExpired = refreshToken && result?.error?.status === 401;
 
   if (isTokenExpired) {
     if (refreshToken) {

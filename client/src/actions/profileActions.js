@@ -28,12 +28,12 @@ export const profileApi = baseApi.injectEndpoints({
     }),
 
     // Delete user account
-    deleteUser: builder.mutation({
-      query: () => ({
-        url: "user/delete-user",
-        method: "DELETE",
-      }),
-    }),
+    // deleteUser: builder.mutation({
+    //   query: () => ({
+    //     url: "user/delete-user",
+    //     method: "DELETE",
+    //   }),
+    // }),
   }),
 });
 

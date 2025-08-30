@@ -5,6 +5,10 @@ import { uploadOnCloudinary } from "../services/cloudinary.service.js";
 import publishMessage from "../rabbitmq/publish.js";
 import User from "../models/user.model.js";
 import axios from "axios";
+import dotenv from "dotenv";
+import serverConfig from "../config/server.config.js";
+
+dotenv.config();
 
 export const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -136,7 +140,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     for (let course of userObj.enrolledCourses) {
       try {
         const courses = await axios.get(
-          `http://course-service:5003/api/v1/course/get-course-by-id/${course}`
+          `${serverConfig.COURSE_SERVICE}/api/v1/course/get-course-by-id/${course}`
         );
         fullCourses.push(courses.data.data);
       } catch (error) {
@@ -171,4 +175,26 @@ export const deleteUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "current user deleted successfully"));
+});
+
+export const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  if (!users) throw new ApiError(404, "users not found");
+  const allUsers = JSON.parse(JSON.stringify(users));
+  for (let user of allUsers) {
+    try {
+      const authUser = await axios.get(
+        `${serverConfig.AUTH_SERVICE}/api/v1/auth/get-user/${String(
+          user.userId
+        )}`
+      );
+      if (!authUser) throw new ApiError(404, "user not found");
+      user["email"] = authUser.data.data.email;
+    } catch (error) {
+      console.error("Error calling auth service:", error.message);
+    }
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allUsers, "all users fetched successfully"));
 });
