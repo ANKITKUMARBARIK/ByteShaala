@@ -29,7 +29,7 @@ export const courseApi = baseApi.injectEndpoints({
     // Get a single course by ID
     getCourseById: builder.query({
       query: (id) => `course/get-course/${id}`,
-      providesTags: (result, error, id) => [{ type: "Courses", id }],
+      providesTags: ["Courses"],
     }),
 
     // Create a new course (admin only)
@@ -49,10 +49,7 @@ export const courseApi = baseApi.injectEndpoints({
         method: "PUT",
         body: courseData,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Courses", id },
-        "Courses",
-      ],
+      invalidatesTags: ["Courses"],
     }),
 
     // Delete a course (admin only)

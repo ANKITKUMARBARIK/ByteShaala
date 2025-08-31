@@ -10,7 +10,10 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { useGetAllUsersQuery } from "../../actions/adminActions";
+import {
+  useDeleteUserMutation,
+  useGetAllUsersQuery,
+} from "../../actions/adminActions";
 
 const UserListPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +22,7 @@ const UserListPage = () => {
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const { data: usersData } = useGetAllUsersQuery();
+  const [deleteUser] = useDeleteUserMutation();
 
   //   const {
   //     data: usersData,
@@ -34,13 +38,27 @@ const UserListPage = () => {
   //   const [deleteUser] = useDeleteUserMutation();
 
   const users = usersData?.data || [];
-  const totalUsers = users.length;
+  const adminCount = users.filter((u) => u.role === "ADMIN").length || 1;
+
   const totalPages = Math.ceil(users.length / 10);
+
+  // Calculate user statistics
+  // const adminUsers = users.filter((u) => u.role === "ADMIN");
+  // const studentUsers = users.filter(
+  //   (u) => u.role === "STUDENT" || u.role !== "ADMIN"
+  // );
+  // const activeUsers = users.filter((u) => u.isActive);
+
+  // Since API might not include admin users, add 1 for current admin if no admins found
+  // const adminCount = adminUsers.length > 0 ? adminUsers.length : 1;
+  // const totalUserCount = users.length + (adminUsers.length > 0 ? 0 : 1); // Add 1 if no admin in response
+  // const activeUserCount = users.length;
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        // await deleteUser(userId).unwrap();
+        const response = await deleteUser(userId).unwrap();
+        console.log(response);
         toast.success("User deleted successfully");
       } catch (error) {
         toast.error("Failed to delete user");
@@ -126,7 +144,7 @@ const UserListPage = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-400">Total Users</p>
-              <p className="text-2xl font-bold text-white">{totalUsers}</p>
+              <p className="text-2xl font-bold text-white">{users.length}</p>
             </div>
           </div>
         </div>
@@ -137,9 +155,7 @@ const UserListPage = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-400">Active Users</p>
-              <p className="text-2xl font-bold text-white">
-                {users.filter((u) => u.isActive).length}
-              </p>
+              <p className="text-2xl font-bold text-white">{users.length}</p>
             </div>
           </div>
         </div>
@@ -150,9 +166,7 @@ const UserListPage = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-400">Admins</p>
-              <p className="text-2xl font-bold text-white">
-                {users.filter((u) => u.role === "ADMIN").length}
-              </p>
+              <p className="text-2xl font-bold text-white">{adminCount}</p>
             </div>
           </div>
         </div>
@@ -163,9 +177,7 @@ const UserListPage = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-400">Students</p>
-              <p className="text-2xl font-bold text-white">
-                {users.filter((u) => u.role === "STUDENT").length}
-              </p>
+              <p className="text-2xl font-bold text-white">{users.length}</p>
             </div>
           </div>
         </div>
@@ -253,57 +265,73 @@ const UserListPage = () => {
               </tr>
             </thead>
             <tbody className="bg-gray-800 divide-y divide-gray-700">
-              {users.map((user) => {
-                return (
-                  <tr
-                    key={user._id}
-                    className="hover:bg-gray-700 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-bold text-white">
-                            {user.firstName?.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-white">
-                            {user.firstName} {user.lastName}
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <User className="w-12 h-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-white mb-2">
+                        No Users Found
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        There are currently no users in the system.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => {
+                  return (
+                    <tr
+                      key={user._id}
+                      className="hover:bg-gray-700 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-white">
+                              {user.firstName?.charAt(0).toUpperCase()}
+                            </span>
                           </div>
-                          <div className="text-sm text-gray-400">
-                            ID: {user.userId}
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-white">
+                              {user.firstName} {user.lastName}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              ID: {user.userId}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {user.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                        {user.enrolledCourses?.length || 0} course
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                      <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                        {formatDate(user.createdAt)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleDeleteUser(user._id)}
-                          className="p-2 text-red-400 hover:bg-red-900 hover:text-red-300 rounded-lg transition-colors"
-                          title="Delete user"
-                        >
-                          <UserX className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {user.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                          {user.enrolledCourses?.length || 0} course
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                        <div className="flex items-center">
+                          <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                          {formatDate(user.createdAt)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleDeleteUser(user._id)}
+                            className="p-2 text-red-400 hover:bg-red-900 hover:text-red-300 rounded-lg transition-colors"
+                            title="Delete user"
+                          >
+                            <UserX className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -338,9 +366,9 @@ const UserListPage = () => {
                   </span>{" "}
                   to{" "}
                   <span className="font-medium">
-                    {Math.min(currentPage * 10, totalUsers)}
+                    {Math.min(currentPage * 10, users.length)}
                   </span>{" "}
-                  of <span className="font-medium">{totalUsers}</span> results
+                  of <span className="font-medium">{users.length}</span> results
                 </p>
               </div>
               <div>

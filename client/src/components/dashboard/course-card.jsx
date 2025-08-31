@@ -1,4 +1,4 @@
-import { ShoppingCart, FileText } from "lucide-react";
+import { ShoppingCart, FileText, Edit } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,8 @@ const CourseCard = ({
   showPricing = false,
   onAddToCart,
   isAddingToCart = false,
+  isAdmin = false,
+  onEditCourse,
 }) => {
   const {
     title,
@@ -116,8 +118,19 @@ const CourseCard = ({
             {buttonText}
           </button>
 
-          {/* Add to Cart Button - Only show if onAddToCart is provided */}
-          {onAddToCart && (
+          {/* Admin Edit Button - Only show if isAdmin is true */}
+          {isAdmin && onEditCourse && (
+            <button
+              onClick={() => onEditCourse(course)}
+              className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <Edit className="w-4 h-4" />
+              Edit Course
+            </button>
+          )}
+
+          {/* Add to Cart Button - Only show if onAddToCart is provided and not admin */}
+          {!isAdmin && onAddToCart && (
             <button
               onClick={() => onAddToCart(course)}
               disabled={isAddingToCart}

@@ -29,7 +29,7 @@ router
 
 router.route("/current-user").get(getCurrentUser);
 
-router.route("/delete-user").delete(deleteUser);
+router.route("/delete-user/:userId").delete(deleteUser);
 
 router.route("/all-users").get(getAllUsers);
 

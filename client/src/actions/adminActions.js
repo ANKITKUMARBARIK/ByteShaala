@@ -40,7 +40,6 @@ export const adminApi = baseApi.injectEndpoints({
         url: `/course/delete-course/${courseId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Courses"],
     }),
   }),
 });

@@ -7,55 +7,50 @@ import {
   Calendar,
   CheckCircle,
 } from "lucide-react";
-import { useContext } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import AdditionalInfo from "./components/additional-info";
-import CourseContent from "./components/course-content";
-import CoursePreview from "./components/course-preview";
-import WriteReview from "./components/write-review";
-
-import { useAddToCartMutation } from "@/actions/cartActions";
+import { useDeleteCourseMutation } from "@/actions/adminActions";
 import { useGetCourseByIdQuery } from "@/actions/courseActions";
-import { useGetUserProfileQuery } from "@/actions/profileActions";
-import { AuthContext } from "@/context/AuthContext";
+import AdditionalInfo from "@/components/course-detail/components/additional-info";
+import CourseContent from "@/components/course-detail/components/course-content";
+import CoursePreview from "@/components/course-detail/components/course-preview";
 
-const CourseDetails = () => {
+const AdminCourseDetail = () => {
   const { id } = useParams();
-  const location = useLocation();
-  const { user } = useContext(AuthContext);
-  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const navigate = useNavigate();
+  const [deleteCourse, { isLoading: isDeleting }] = useDeleteCourseMutation();
 
   // Fetch course by ID from API
   const { data: courseDetails, isLoading, error } = useGetCourseByIdQuery(id);
-  const { data: profileData } = useGetUserProfileQuery();
 
   const course = courseDetails?.data;
-  const currentUser = profileData?.data || profileData || user;
 
-  const handleAddToCart = async () => {
+  const handleEditCourse = async (course) => {
     try {
-      await addToCart(course._id).unwrap();
-      toast.success("Course added to cart!");
+      navigate(`/admin/courses/edit/${course.slug}`);
+      toast.success("Redirecting to edit course...");
     } catch (error) {
-      if (error?.data?.message) {
-        toast.error(error.data.message);
-      } else {
-        toast.error("Failed to add course to cart");
-      }
+      toast.error("Failed to navigate to edit course");
     }
   };
 
-  // Determine if user owns the course
-  const enrolledCourses =
-    profileData?.data?.enrolledCourses || profileData?.enrolledCourses || [];
-  const isOwnedByProfile = enrolledCourses.some(
-    (c) => c?._id === course?._id || c?.slug === course?.slug
-  );
-  const isOwnedByState = Boolean(location.state?.fromEnrolled);
-  const isOwned = isOwnedByProfile || isOwnedByState;
-  const isAuthenticated = Boolean(currentUser);
+  const handleDeleteCourse = async (course) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this course? This action cannot be undone."
+      )
+    ) {
+      try {
+        await deleteCourse(course._id).unwrap();
+        toast.success("Course deleted successfully");
+        navigate("/admin/courses");
+      } catch (error) {
+        toast.error("Failed to delete course");
+        console.error("Delete course error:", error);
+      }
+    }
+  };
 
   // Loading state
   if (isLoading) {
@@ -162,37 +157,60 @@ const CourseDetails = () => {
                 </div>
               </div>
 
-              {/* Price Information */}
+              {/* Admin Price Information */}
               <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex items-center space-x-4">
-                    <span className="text-2xl sm:text-3xl font-bold text-white">
-                      ₹{course?.price?.toLocaleString()}
-                    </span>
+                <h4 className="text-lg font-semibold text-white mb-3">
+                  Pricing Details
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">
+                        Current Price:
+                      </span>
+                      <span className="text-xl font-bold text-white">
+                        ₹{course?.price?.toLocaleString()}
+                      </span>
+                    </div>
                     {course?.originalPrice &&
                       course?.originalPrice > course?.price && (
-                        <span className="text-lg text-gray-400 line-through">
-                          ₹{course?.originalPrice?.toLocaleString()}
-                        </span>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-400">
+                            Original Price:
+                          </span>
+                          <span className="text-sm text-gray-400 line-through">
+                            ₹{course?.originalPrice?.toLocaleString()}
+                          </span>
+                        </div>
                       )}
                   </div>
                   {course?.originalPrice &&
                     course?.originalPrice > course?.price && (
-                      <div className="flex items-center space-x-2">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                          Save ₹
-                          {(
-                            course?.originalPrice - course?.price
-                          )?.toLocaleString()}
-                        </span>
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
-                          {Math.round(
-                            ((course?.originalPrice - course?.price) /
-                              course?.originalPrice) *
-                              100
-                          )}
-                          % OFF
-                        </span>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-400">
+                            Discount:
+                          </span>
+                          <span className="text-sm text-green-400 font-semibold">
+                            {Math.round(
+                              ((course?.originalPrice - course?.price) /
+                                course?.originalPrice) *
+                                100
+                            )}
+                            % OFF
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-400">
+                            You Save:
+                          </span>
+                          <span className="text-sm text-green-400 font-semibold">
+                            ₹
+                            {(
+                              course?.originalPrice - course?.price
+                            )?.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     )}
                 </div>
@@ -206,13 +224,13 @@ const CourseDetails = () => {
               </div>
             </div>
 
-            {/* Right Sidebar - Course Preview */}
+            {/* Right Sidebar - Admin Course Preview */}
             <div className="lg:col-span-1">
               <CoursePreview
                 course={course}
-                handleAddToCart={handleAddToCart}
-                isAddingToCart={isAddingToCart}
-                isOwned={isOwned}
+                isAdmin={true}
+                onEditCourse={handleEditCourse}
+                onDeleteCourse={handleDeleteCourse}
               />
             </div>
           </div>
@@ -227,10 +245,10 @@ const CourseDetails = () => {
             {/* What You'll Learn */}
             <div className="bg-gray-900 rounded-lg p-6">
               <h3 className="text-2xl font-bold mb-6">
-                What you&apos;ll learn
+                What students will learn
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
-                {course.learningPoints.map((item, index) => (
+                {course.learningPoints?.map((item, index) => (
                   <div key={index} className="flex items-start space-x-3">
                     <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
                     <span className="text-gray-300">{item}</span>
@@ -239,14 +257,14 @@ const CourseDetails = () => {
               </div>
             </div>
 
-            {/* Course Content with ShadCN Accordion */}
+            {/* Course Content */}
             <CourseContent course={course} />
 
             {/* Requirements */}
             <div className="bg-gray-900 rounded-lg p-6">
               <h3 className="text-2xl font-bold mb-6">Requirements</h3>
               <ul className="space-y-3">
-                {course.requirements.map((requirement, index) => (
+                {course.requirements?.map((requirement, index) => (
                   <li key={index} className="flex items-start space-x-3">
                     <div className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                     <span className="text-gray-300">{requirement}</span>
@@ -255,12 +273,16 @@ const CourseDetails = () => {
               </ul>
             </div>
 
-            {/* Reviews Section */}
-            <WriteReview
-              isAuthenticated={isAuthenticated}
-              isOwned={isOwned}
-              course={course}
-            />
+            {/* Admin Note - No Reviews Section */}
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-xl font-bold mb-3 text-orange-400">
+                Admin View
+              </h3>
+              <p className="text-gray-300">
+                You are viewing this course as an administrator. Student reviews
+                and enrollment features are not displayed in admin view.
+              </p>
+            </div>
           </div>
 
           {/* Right Sidebar - Additional Info */}
@@ -273,4 +295,4 @@ const CourseDetails = () => {
   );
 };
 
-export default CourseDetails;
+export default AdminCourseDetail;

@@ -71,13 +71,6 @@ const AdminNavbar = ({ onLogout }) => {
               <span>Users</span>
             </Link>
             <Link
-              to="/admin/analytics"
-              className={getLinkClasses("/admin/analytics")}
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>Analytics</span>
-            </Link>
-            <Link
               to="/admin/courses"
               className={getLinkClasses("/admin/courses")}
             >

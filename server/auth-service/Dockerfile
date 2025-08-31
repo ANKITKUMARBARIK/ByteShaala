@@ -1,20 +1,20 @@
-# Get a computer with Node.js already installed
+# Get Node.js image
 FROM node:20
 
-# Create a folder called /app inside the box
+# Set working directory
 WORKDIR /app
 
-# Copy package.json into the box
-COPY package* .
+# Copy only package.json and package-lock.json first (leverage caching)
+COPY package*.json ./
 
-# Install all the packages your app needs
+# Install dependencies
 RUN npm install
 
-# Copy all your code into the box
+# Copy app source code
 COPY . .
 
-# Tell the box "hey, this app uses port 5001"
+# Expose port
 EXPOSE 5001
 
-# When the box starts, run this command
+# Default command
 CMD ["npm", "run", "dev"]

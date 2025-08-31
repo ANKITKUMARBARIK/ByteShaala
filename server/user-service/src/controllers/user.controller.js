@@ -165,7 +165,9 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
-  const existedUser = await User.findOneAndDelete({ userId: req.user?._id });
+  const existedUser = await User.findOneAndDelete({
+    _id: req.params.userId,
+  });
   if (!existedUser) throw new ApiError(404, "user not found");
 
   await publishMessage("user_exchange", "user.deleted", {

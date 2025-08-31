@@ -14,6 +14,10 @@ import AuthLayout from "@/layouts/AuthLayout";
 import NonAuthLayout from "@/layouts/NonAuthLayout";
 import { getCookie } from "@/lib/utils";
 import AdminPage from "@/pages/admin";
+import AdminCourseDetails from "@/pages/admin/course-details";
+import Courses from "@/pages/admin/courses";
+import CreateCoursePage from "@/pages/admin/create-course";
+import EditCoursePage from "@/pages/admin/edit-course";
 import UserListPage from "@/pages/admin/user-list";
 import CartPage from "@/pages/cart";
 import CourseDetailPage from "@/pages/course-detail";
@@ -54,7 +58,19 @@ const adminRoutes = [
   },
   {
     path: "/admin/courses",
-    element: AdminPage,
+    element: Courses,
+  },
+  {
+    path: "/admin/courses/create",
+    element: CreateCoursePage,
+  },
+  {
+    path: "/admin/courses/:id",
+    element: AdminCourseDetails,
+  },
+  {
+    path: "/admin/courses/edit/:id",
+    element: EditCoursePage,
   },
 ];
 
