@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as yup from "yup";
 
+import { useDeleteUserMutation } from "@/actions/adminActions";
 import {
   useGetUserProfileQuery,
   useUpdateAccountMutation,
   useChangePasswordMutation,
-  useDeleteUserMutation,
 } from "@/actions/profileActions";
 import CommonInput from "@/components/common/common-input";
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,6 @@ export function ProfileForm({ className, ...props }) {
   const [changePassword, { isLoading: passwordLoading }] =
     useChangePasswordMutation();
   const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation();
-
   const user = userData?.data || userData;
 
   // Profile form - Initialize with empty values first, then update when user data loads
@@ -191,7 +190,7 @@ export function ProfileForm({ className, ...props }) {
       )
     ) {
       try {
-        await deleteUser().unwrap();
+        await deleteUser(user?.userId).unwrap();
         toast.success("Account deleted successfully!");
         removeAuth();
         // Redirect to login or home page

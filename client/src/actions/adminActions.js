@@ -5,7 +5,7 @@ export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => "user/all-users",
-      providesTags: ["Users"],
+      providesTags: ["getAllUsers"],
     }),
 
     deleteUser: builder.mutation({
@@ -13,7 +13,7 @@ export const adminApi = baseApi.injectEndpoints({
         url: `/user/delete-user/${userId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Users"],
+      invalidatesTags: ["getAllUsers"],
     }),
 
     // Course Management Endpoints
@@ -23,7 +23,7 @@ export const adminApi = baseApi.injectEndpoints({
         method: "POST",
         body: courseData,
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["getCourses"],
     }),
 
     updateCourse: builder.mutation({
@@ -32,7 +32,7 @@ export const adminApi = baseApi.injectEndpoints({
         method: "PUT",
         body: courseData,
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["getCourses", "getCourseById"],
     }),
 
     deleteCourse: builder.mutation({
@@ -40,6 +40,7 @@ export const adminApi = baseApi.injectEndpoints({
         url: `/course/delete-course/${courseId}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["getCourses"],
     }),
   }),
 });

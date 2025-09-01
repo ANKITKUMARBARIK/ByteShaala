@@ -8,7 +8,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useContext } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import AdditionalInfo from "./components/additional-info";
@@ -26,6 +26,8 @@ const CourseDetails = () => {
   const location = useLocation();
   const { user } = useContext(AuthContext);
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { authenticated } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Fetch course by ID from API
   const { data: courseDetails, isLoading, error } = useGetCourseByIdQuery(id);
@@ -36,6 +38,11 @@ const CourseDetails = () => {
 
   const handleAddToCart = async () => {
     try {
+      if (!authenticated) {
+        navigate("/login");
+        toast.error("Please login to add course to cart");
+        return;
+      }
       await addToCart(course._id).unwrap();
       toast.success("Course added to cart!");
     } catch (error) {
@@ -44,6 +51,24 @@ const CourseDetails = () => {
       } else {
         toast.error("Failed to add course to cart");
       }
+    }
+  };
+
+  const handleBuyNow = async () => {
+    try {
+      if (!authenticated) {
+        navigate("/login");
+        toast.error("Please login to buy course");
+        return;
+      }
+      // await addToCart(course._id).unwrap();
+      // toast.success("Course added to cart!");
+    } catch (error) {
+      // if (error?.data?.message) {
+      //   toast.error(error.data.message);
+      // } else {
+      //   toast.error("Failed to add course to cart");
+      // }
     }
   };
 
@@ -213,6 +238,7 @@ const CourseDetails = () => {
                 handleAddToCart={handleAddToCart}
                 isAddingToCart={isAddingToCart}
                 isOwned={isOwned}
+                handleBuyNow={handleBuyNow}
               />
             </div>
           </div>

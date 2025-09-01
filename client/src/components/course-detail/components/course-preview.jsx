@@ -9,6 +9,7 @@ const CoursePreview = ({
   isAdmin = false,
   onEditCourse,
   onDeleteCourse,
+  handleBuyNow,
 }) => {
   return (
     <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl sticky top-4">
@@ -105,7 +106,10 @@ const CoursePreview = ({
               <span>{isAddingToCart ? "Adding..." : "Add to Cart"}</span>
             </button>
 
-            <button className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200">
+            <button
+              onClick={handleBuyNow}
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+            >
               Buy Now
             </button>
           </>

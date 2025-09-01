@@ -58,7 +58,6 @@ const UserListPage = () => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         const response = await deleteUser(userId).unwrap();
-        console.log(response);
         toast.success("User deleted successfully");
       } catch (error) {
         toast.error("Failed to delete user");

@@ -155,6 +155,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     firstName: userObj.firstName,
     lastName: userObj.lastName,
     avatar: userObj.avatar,
+    userId: userObj._id,
     enrolledCourses: userObj.enrolledCourses, // Include enrolled courses
     ...req.user,
   };

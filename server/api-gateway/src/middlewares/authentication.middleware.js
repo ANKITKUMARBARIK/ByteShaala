@@ -9,7 +9,7 @@ const verifyAuthentication = asyncHandler(async (req, res, next) => {
       req.header("Authorization")?.replace("Bearer ", "");
 
     if (!token)
-      throw new ApiError(401, "Access token is required. Please login.");
+      throw new ApiError(401, "You're unauthorized, Please login first.");
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     if (!decodedToken)
@@ -23,7 +23,7 @@ const verifyAuthentication = asyncHandler(async (req, res, next) => {
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({
         statusCode: 401,
-        message: "Session expired. Please login again.",
+        message: "Your session has expired. Please login again.",
         success: false,
         data: null,
         errors: [],

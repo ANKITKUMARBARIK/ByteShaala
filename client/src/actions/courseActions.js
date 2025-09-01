@@ -23,13 +23,13 @@ export const courseApi = baseApi.injectEndpoints({
 
         return queryString;
       },
-      providesTags: ["Courses"],
+      providesTags: ["getCourses"],
     }),
 
     // Get a single course by ID
     getCourseById: builder.query({
       query: (id) => `course/get-course/${id}`,
-      providesTags: ["Courses"],
+      providesTags: ["getCourseById"],
     }),
 
     // Create a new course (admin only)
@@ -39,7 +39,7 @@ export const courseApi = baseApi.injectEndpoints({
         method: "POST",
         body: courseData,
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["getCourses"],
     }),
 
     // Update an existing course (admin only)
@@ -49,7 +49,7 @@ export const courseApi = baseApi.injectEndpoints({
         method: "PUT",
         body: courseData,
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["getCourses", "getCourseById"],
     }),
 
     // Delete a course (admin only)
@@ -58,7 +58,7 @@ export const courseApi = baseApi.injectEndpoints({
         url: `course/delete-course/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["getCourses", "getCourseById"],
     }),
   }),
 });
