@@ -222,3 +222,17 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, allUsers, "all users fetched successfully"));
 });
+
+export const addPurchaseCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.body;
+
+  const existedUser = await User.findOne({ userId: req.user?._id });
+  if (!existedUser) throw new ApiError(404, "user not found");
+
+  existedUser.enrolledCourses.push(courseId);
+  await existedUser.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "course added to purchase successfully"));
+});

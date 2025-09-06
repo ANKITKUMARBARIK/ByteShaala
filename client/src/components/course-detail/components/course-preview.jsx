@@ -9,7 +9,7 @@ const CoursePreview = ({
   isAdmin = false,
   onEditCourse,
   onDeleteCourse,
-  handleBuyNow,
+  onBuyNow,
 }) => {
   return (
     <div className="bg-gray-800 rounded-lg overflow-hidden shadow-xl sticky top-4">
@@ -107,7 +107,9 @@ const CoursePreview = ({
             </button>
 
             <button
-              onClick={handleBuyNow}
+              onClick={() => {
+                onBuyNow(course?._id);
+              }}
               className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200"
             >
               Buy Now

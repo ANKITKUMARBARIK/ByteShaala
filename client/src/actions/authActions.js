@@ -67,6 +67,16 @@ export const authApi = baseApi.injectEndpoints({
       query: () => "auth/me",
       providesTags: ["Auth"],
     }),
+
+    //Add purchase dummy api
+    addPurchase: builder.mutation({
+      query: (courseId) => ({
+        url: "user/add-purchase-course",
+        method: "POST",
+        body: { courseId },
+      }),
+      invalidatesTags: ["Profile", "getCourseById"],
+    }),
   }),
 });
 
@@ -78,4 +88,5 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useGetCurrentUserQuery,
+  useAddPurchaseMutation,
 } = authApi;

@@ -5,6 +5,7 @@ import {
   getCurrentUser,
   deleteUser,
   getAllUsers,
+  addPurchaseCourse,
 } from "../controllers/user.controller.js";
 import validate from "../middlewares/validate.middleware.js";
 import {
@@ -32,5 +33,7 @@ router.route("/current-user").get(getCurrentUser);
 router.route("/delete-user/:userId").delete(deleteUser);
 
 router.route("/all-users").get(getAllUsers);
+
+router.route("/add-purchase-course").post(addPurchaseCourse);
 
 export default router;

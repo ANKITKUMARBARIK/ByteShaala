@@ -26,6 +26,7 @@ const CartSummary = ({ totalPrice, totalOriginalPrice, totalSavings }) => {
         <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 mb-3 flex items-center justify-center space-x-2">
           <CreditCard className="w-5 h-5" />
           <span>Proceed to Checkout</span>
+          {/* <span>Buy Now</span> */}
         </button>
 
         <div className="text-center text-sm text-gray-400">

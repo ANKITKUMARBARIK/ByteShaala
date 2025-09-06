@@ -16,6 +16,7 @@ import CourseContent from "./components/course-content";
 import CoursePreview from "./components/course-preview";
 import WriteReview from "./components/write-review";
 
+import { useAddPurchaseMutation } from "@/actions/authActions";
 import { useAddToCartMutation } from "@/actions/cartActions";
 import { useGetCourseByIdQuery } from "@/actions/courseActions";
 import { useGetUserProfileQuery } from "@/actions/profileActions";
@@ -28,6 +29,7 @@ const CourseDetails = () => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const { authenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [addPurchase] = useAddPurchaseMutation();
 
   // Fetch course by ID from API
   const { data: courseDetails, isLoading, error } = useGetCourseByIdQuery(id);
@@ -46,11 +48,9 @@ const CourseDetails = () => {
       await addToCart(course._id).unwrap();
       toast.success("Course added to cart!");
     } catch (error) {
-      if (error?.data?.message) {
-        toast.error(error.data.message);
-      } else {
-        toast.error("Failed to add course to cart");
-      }
+      const errorMessage =
+        error?.data?.error?.message || "Failed to add course to cart";
+      toast.error(errorMessage);
     }
   };
 
@@ -61,14 +61,13 @@ const CourseDetails = () => {
         toast.error("Please login to buy course");
         return;
       }
-      // await addToCart(course._id).unwrap();
-      // toast.success("Course added to cart!");
+      await addPurchase(course._id).unwrap();
+      // navigate("/dashboard");
+      toast.success("Course purchased successfully!");
     } catch (error) {
-      // if (error?.data?.message) {
-      //   toast.error(error.data.message);
-      // } else {
-      //   toast.error("Failed to add course to cart");
-      // }
+      const errorMessage =
+        error?.data?.error?.message || "Failed to purchase course";
+      toast.error(errorMessage);
     }
   };
 
@@ -238,7 +237,7 @@ const CourseDetails = () => {
                 handleAddToCart={handleAddToCart}
                 isAddingToCart={isAddingToCart}
                 isOwned={isOwned}
-                handleBuyNow={handleBuyNow}
+                onBuyNow={handleBuyNow}
               />
             </div>
           </div>
