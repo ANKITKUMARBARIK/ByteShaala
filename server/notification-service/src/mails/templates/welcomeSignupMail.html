@@ -2,101 +2,339 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Welcome | ByteShaala Team 🎓</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to ByteShaala</title>
     <style>
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            font-family: "Segoe UI", sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
+        .email-container {
             max-width: 600px;
-            margin: auto;
-            padding: 40px 20px;
+            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #ffffff;
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+            color: white;
         }
 
-        .logo {
+        .header h1 {
+            margin: 0;
             font-size: 28px;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 20px;
+            font-weight: 700;
         }
 
-        .heading {
-            font-size: 22px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .welcome-message {
-            color: #555;
+        .header p {
+            margin: 5px 0 0 0;
             font-size: 16px;
-            margin: 20px 0;
-            line-height: 1.5;
+            opacity: 0.9;
         }
 
-        .btn {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 6px;
+        .content {
+            padding: 40px 30px;
+            background-color: #ffffff;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #666666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .welcome-container {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f1f4ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: #888888;
+            margin-bottom: 15px;
+        }
+
+        .feature-grid {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 15px;
+            flex: 1;
+            min-width: 150px;
+            margin: 10px 5px;
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-size: 14px;
             font-weight: 600;
-            transition: background-color 0.3s ease;
+            color: #333333;
+            margin-bottom: 5px;
         }
 
-        .btn:hover {
-            background-color: #0056b3;
+        .feature-desc {
+            font-size: 12px;
+            color: #666666;
         }
 
-        .footer {
-            margin-top: 30px;
-            color: #888;
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button-secondary {
+            background: transparent;
+            color: #667eea !important;
+            border: 2px solid #667eea;
+            box-shadow: none;
+        }
+
+        .stats-container {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            padding: 10px;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .highlight {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #0066cc;
             font-size: 14px;
         }
 
-        .footer a {
-            color: #007bff;
-            text-decoration: none;
+        .footer {
+            background-color: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 14px;
         }
 
-        .footer a:hover {
-            text-decoration: underline;
+        .footer-links {
+            margin: 15px 0;
+        }
+
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 8px;
+            padding: 8px;
+            background-color: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            text-align: center;
+            line-height: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .feature-grid {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                flex-direction: column;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="logo">ByteShaala Team 🎓</div>
-        <div class="heading">Welcome to ByteShaala Team 🎓</div>
+<body style="margin: 0; padding: 20px; background-color: #f5f7fa;">
+    <div class="email-container">
+        <div class="header">
+            <h1>ByteShaala LMS Platform</h1>
+            <p>Excellence in Online Learning</p>
+        </div>
+        <div class="content">
+            <div class="greeting">{{fullName}}! 🎉</div>
 
-        <p class="welcome-message">
-            Hi <strong>{{fullName}}</strong>,<br /><br />
-            <img src="cid:img1-contentid" alt="banner" width="400px" /><br />
-            Thank you for signing up with our ByteShaala Team 🎓! We're
-            excited to have you on board.<br />
-            Manage your ByteShaala Team 🎓, track your stock, and grow your business
-            with ease.<br /><br />
-            Click the button below to get started:
-        </p>
+            <div class="welcome-container">
+                <div class="welcome-icon">🚀</div>
+                <div class="welcome-title">Registration Successful!</div>
+                <div class="welcome-subtitle">Your learning journey starts now</div>
+            </div>
 
-        <a href="{{dashboardLink}}" class="btn">Go to Dashboard</a>
+            <div class="message">
+                Congratulations on successfully joining ByteShaala LMS Platform! We're thrilled to have you as part
+                of our growing community of learners and educators.
+                <br><br>
+                Your account has been verified and you now have full access to our comprehensive learning ecosystem.
+            </div>
+
+            <div class="stats-container">
+                <h3 style="margin-top: 0; color: #333;">What awaits you:</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Courses</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Expert Instructors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Active Students</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📚</div>
+                    <div class="feature-title">Rich Course Library</div>
+                    <div class="feature-desc">Access diverse courses across multiple domains</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏆</div>
+                    <div class="feature-title">Certificates</div>
+                    <div class="feature-desc">Earn industry-recognized certificates</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">Community</div>
+                    <div class="feature-desc">Connect with fellow learners</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{dashboardLink}}" class="button">Explore Courses</a>
+                <a href="{{dashboardLink}}" class="button button-secondary">Complete Your Profile</a>
+            </div>
+
+            <div class="highlight">
+                🎁 <strong>Special Welcome Offer:</strong> Get 20% off on your first course purchase!
+                Use code <strong>WELCOME20</strong> at checkout. Valid for 7 days.
+            </div>
+
+            <div class="message">
+                <strong>Next Steps:</strong>
+                <br>• Browse our course catalog and find subjects that interest you
+                <br>• Complete your profile to get personalized course recommendations
+                <br>• Join our community forums to connect with other learners
+                <br>• Download our mobile app for learning on-the-go
+                <br><br>
+                Need help getting started? Our support team is available 24/7 to assist you with anything you need.
+            </div>
+        </div>
 
         <div class="footer">
-            &mdash; ByteShaala Team 🎓<br />
-            <a href="http://localhost:5173/">Visit ByteShaala Team 🎓</a>
+            <p>&copy; 2025 ByteShaala LMS Platform. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a> |
+                <a href="#">Terms of Service</a> |
+                <a href="#">Support</a> |
+                <a href="#">Download App</a>
+            </div>
+            <div class="social-links">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Twitter">t</a>
+                <a href="#" title="LinkedIn">in</a>
+                <a href="#" title="Instagram">ig</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 12px;">
+                You're receiving this email because you successfully registered on ByteShaala LMS Platform.
+                <br>
+                <a href="#" style="color: #667eea;">Manage email preferences</a>
+            </p>
         </div>
     </div>
 </body>

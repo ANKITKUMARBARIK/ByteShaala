@@ -15,11 +15,11 @@ const welcomeSignupMail = async (firstName, lastName, email) => {
 
         const mailOptions = {
             from: {
-                name: "ByteShaala Team 🎓",
+                name: "ByteShaala LMS Platform",
                 address: process.env.APP_GMAIL,
             },
             to: { name: fullName, address: email },
-            subject: `Welcome ${fullName}`,
+            subject: `${fullName} - ByteShaala LMS Platform`,
             html: finalHtml,
             text: finalHtml,
             attachments: [
