@@ -2,101 +2,187 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Reset Your Password | ByteShaala Team 🎓</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset</title>
     <style>
-        body {
-            background-color: #f5f7fa;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        .container {
+        .email-container {
             max-width: 600px;
-            margin: auto;
-            padding: 40px 25px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
             text-align: center;
+            color: white;
         }
 
-        .logo {
+        .header h1 {
+            margin: 0;
             font-size: 28px;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 20px;
+            font-weight: 700;
         }
 
-        .heading {
-            font-size: 22px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 12px;
-        }
-
-        .text {
+        .header p {
+            margin: 5px 0 0 0;
             font-size: 16px;
-            color: #555;
-            margin: 10px 0;
+            opacity: 0.9;
         }
 
-        .link-box {
-            margin: 25px 0;
+        .content {
+            padding: 40px 30px;
+            background-color: #ffffff;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #666666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .otp-container {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f1f4ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
         }
 
         .action-link {
             display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background 0.2s;
+            padding: 15px 35px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
         }
 
         .action-link:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .otp-label {
+            font-size: 14px;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+            font-size: 14px;
         }
 
         .footer {
-            margin-top: 30px;
+            background-color: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
             font-size: 14px;
-            color: #888;
         }
 
-        .footer a {
-            color: #007bff;
+        .footer-links {
+            margin: 15px 0;
+        }
+
+        .footer-links a {
+            color: #667eea;
             text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 8px;
+            padding: 8px;
+            background-color: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            text-align: center;
+            line-height: 20px;
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="logo">ByteShaala Team 🎓</div>
-        <div class="heading">Reset Your Password</div>
+<body style="margin: 0; padding: 20px; background-color: #f5f7fa;">
+    <div class="email-container">
+        <div class="header">
+            <h1>ByteShaala LMS Platform</h1>
+            <p>Excellence in Online Learning</p>
+        </div>
+        <div class="content">
+            <div class="greeting">Hello {{fullName}},</div>
+            <div class="message">
+                We received a request to reset your password for your ByteShaala LMS Platform account.
+                <br><br>
+                If you requested this password reset, please click the button below to reset your password:
+            </div>
 
-        <p class="text">Hello {{fullName}},</p>
-        <p class="text">
-            We received a request to reset your password. Click the button below to
-            proceed:
-        </p>
+            <div class="otp-container">
+                <div class="otp-label">Password Reset</div>
+                <a class="action-link" href="{{actionLink}}">Reset Password</a>
+            </div>
 
-        <div class="link-box">
-            <a class="action-link" href="{{actionLink}}">Reset Password</a>
+            <div class="warning">
+                ⏰ <strong>Security Notice:</strong> This password reset link will expire in 5 minutes.
+                If you didn't request a password reset, please ignore this email and your password will remain
+                unchanged.
+            </div>
+
+            <div class="message">
+                For your security, never share this link with anyone. Our support team will never ask for this link.
+            </div>
         </div>
 
-        <p class="text">
-            If you didn't request this, you can safely ignore this email.
-        </p>
-
         <div class="footer">
-            — ByteShaala Team 🎓<br />
-            <a href="http://localhost:5173/">Visit ByteShaala</a>
+            <p>&copy; 2025 ByteShaala LMS Platform. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a> |
+                <a href="#">Terms of Service</a> |
+                <a href="#">Support</a>
+            </div>
+            <div class="social-links">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Twitter">t</a>
+                <a href="#" title="LinkedIn">in</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 12px;">
+                This email was sent from a secure server. Please do not reply to this email.
+            </p>
         </div>
     </div>
 </body>

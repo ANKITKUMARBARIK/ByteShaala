@@ -18,11 +18,11 @@ const tokenVerifyMail = async (firstName, lastName, email, token) => {
 
         const mailOptions = {
             from: {
-                name: "ByteShaala Team 🎓",
+                name: "ByteShaala LMS Platform",
                 address: process.env.APP_GMAIL,
             },
             to: { name: fullName, address: email },
-            subject: "Token Verification - Reset Password",
+            subject: "🔐 Password Reset Code - ByteShaala LMS Platform",
             html: finalHtml,
             text: finalHtml,
         };

@@ -2,87 +2,192 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>OTP Verification | ByteShaala Team 🎓</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
     <style>
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
+        .email-container {
             max-width: 600px;
-            margin: auto;
-            padding: 40px 20px;
+            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #ffffff;
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+            color: white;
         }
 
-        .logo {
+        .header h1 {
+            margin: 0;
             font-size: 28px;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 20px;
+            font-weight: 700;
         }
 
-        .heading {
-            font-size: 22px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .otp-box {
-            background-color: #f0f0f0;
-            padding: 18px 30px;
-            border-radius: 10px;
-            margin: 30px 0;
-            font-size: 30px;
-            font-weight: bold;
-            color: #007bff;
-            letter-spacing: 6px;
-            display: inline-block;
-        }
-
-        .text {
-            color: #555;
+        .header p {
+            margin: 5px 0 0 0;
             font-size: 16px;
-            margin: 8px 0;
+            opacity: 0.9;
         }
 
-        .footer {
-            margin-top: 30px;
-            color: #888;
+        .content {
+            padding: 40px 30px;
+            background-color: #ffffff;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #666666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .otp-container {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f1f4ff 100%);
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .otp-code {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            letter-spacing: 4px;
+            margin: 10px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .otp-label {
+            font-size: 14px;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
             font-size: 14px;
         }
 
-        a {
-            color: #007bff;
+        .footer {
+            background-color: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .footer-links {
+            margin: 15px 0;
+        }
+
+        .footer-links a {
+            color: #667eea;
             text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 8px;
+            padding: 8px;
+            background-color: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            text-align: center;
+            line-height: 20px;
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="logo">ByteShaala Team 🎓</div>
-        <div class="heading">Email Verification</div>
-
-        <p class="text">Hello {{fullName}},</p>
-        <p class="text">Please use the OTP below to verify your email address:</p>
-
-        <div class="otp-box">{{otpSignup}}</div>
-
-        <p class="text">This OTP is valid for <strong>5 minutes</strong>. Please do not share it with anyone.</p>
-
+<body style="margin: 0; padding: 20px; background-color: #f5f7fa;">
+    <div class="email-container">
+        <div class="header">
+            <h1>ByteShaala LMS Platform</h1>
+            <p>Excellence in Online Learning</p>
+        </div>
+        <div class="content">
+            <div class="greeting">Hello {{fullName}}! 👋</div>
+            <div class="message">
+                Welcome to ByteShaala LMS Platform! We're excited to have you join our learning community.
+                <br><br>
+                To complete your registration and verify your email address, please use the verification code below:
+            </div>
+            <div class="otp-container">
+                <div class="otp-label">Your Verification Code</div>
+                <div class="otp-code">{{otpSignup}}</div>
+            </div>
+            <div class="warning">
+                ⏰ <strong>Important:</strong> This verification code will expire in 5 minutes.
+                If you didn't request this verification, please ignore this email.
+            </div>
+            <div class="message">
+                Once verified, you'll have access to our extensive course catalog and can start your learning journey
+                immediately.
+                <br><br>
+                If you have any questions, our support team is here to help!
+            </div>
+        </div>
         <div class="footer">
-            &mdash; ByteShaala Team 🎓<br />
-            <a href="http://localhost:5173/">Visit ByteShaala Team 🎓</a>
+            <p>&copy; 2025 ByteShaala LMS Platform. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a> |
+                <a href="#">Terms of Service</a> |
+                <a href="#">Support</a>
+            </div>
+            <div class="social-links">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Twitter">t</a>
+                <a href="#" title="LinkedIn">in</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 12px;">
+                This email was sent from a secure server. Please do not reply to this email.
+            </p>
         </div>
     </div>
 </body>

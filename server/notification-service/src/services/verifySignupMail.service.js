@@ -15,11 +15,11 @@ const verifySignupMail = async (firstName, lastName, email, otpSignup) => {
 
         const mailOptions = {
             from: {
-                name: "ByteShaala Team 🎓",
+                name: "ByteShaala LMS Platform",
                 address: process.env.APP_GMAIL,
             },
             to: { name: fullName, address: email },
-            subject: "OTP Verification",
+            subject: "🔐 Verify Your Email - ByteShaala LMS Platform",
             html: finalHtml,
             text: finalHtml,
         };
