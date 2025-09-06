@@ -7,6 +7,7 @@ import InquiryForm from "./inquiry-form";
 import RecentActivity from "./recent-activity";
 import Testimonials from "./testimonials";
 
+import { useGetAllReviewsQuery } from "@/actions/courseActions";
 import { useGetUserProfileQuery } from "@/actions/profileActions";
 import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/context/AuthContext";
@@ -14,6 +15,8 @@ import { AuthContext } from "@/context/AuthContext";
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const { data: userData } = useGetUserProfileQuery();
+  const { data: reviewsData } = useGetAllReviewsQuery();
+
   const navigate = useNavigate();
 
   const currentUser = userData?.data || userData || user;
@@ -132,7 +135,7 @@ const Dashboard = () => {
       </div>
 
       {/* Testimonials Section */}
-      <Testimonials />
+      <Testimonials reviews={reviewsData?.data || []} />
 
       {/* Recent Activity Section */}
       <RecentActivity />

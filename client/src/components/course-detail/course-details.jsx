@@ -225,7 +225,8 @@ const CourseDetails = () => {
               <div className="mt-6">
                 <span className="text-gray-400">Created by </span>
                 <span className="text-blue-400 font-semibold">
-                  {course?.instructor}
+                  {"Admin"}
+                  {/* {course?.instructor} */}
                 </span>
               </div>
             </div>

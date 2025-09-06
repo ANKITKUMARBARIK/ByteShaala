@@ -2,44 +2,11 @@ import { MessageSquare, Send, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import {
+  useAddReviewMutation,
+  // useGetAllReviewsQuery,
+} from "@/actions/courseActions";
 import { Button } from "@/components/ui/button";
-
-// Mock reviews data (in real app, this would come from course.reviews)
-const mockReviews = [
-  {
-    id: 1,
-    user: {
-      name: "Priya Sharma",
-      avatar: "PS",
-    },
-    rating: 5,
-    comment:
-      "Excellent course! The instructor explains complex concepts in a very simple way. Highly recommended for beginners and intermediate learners.",
-    createdAt: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: 2,
-    user: {
-      name: "Rahul Kumar",
-      avatar: "RK",
-    },
-    rating: 4,
-    comment:
-      "Great content and practical examples. The course structure is well organized. Would love to see more advanced topics covered.",
-    createdAt: "2024-01-10T14:20:00Z",
-  },
-  {
-    id: 3,
-    user: {
-      name: "Anita Patel",
-      avatar: "AP",
-    },
-    rating: 5,
-    comment:
-      "This course changed my career! The hands-on projects and real-world examples helped me land my dream job. Thank you!",
-    createdAt: "2024-01-05T09:15:00Z",
-  },
-];
 
 const WriteReview = ({ isAuthenticated, isOwned, course }) => {
   // Review form state
@@ -47,7 +14,11 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
     rating: 0,
     comment: "",
   });
-  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [addReview, { isLoading: isSubmittingReview }] = useAddReviewMutation();
+
+  // Fetch all reviews from API
+  // const { data: reviewsData, isLoading: isLoadingReviews } =
+  //   useGetAllReviewsQuery();
 
   // Handle review submission
   const handleReviewSubmit = async (e) => {
@@ -57,18 +28,21 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
       return;
     }
 
-    setIsSubmittingReview(true);
     try {
-      // Here you would call your review submission API
-      // await submitReview({ courseId: course._id, ...reviewForm }).unwrap();
+      await addReview({
+        courseId: course._id,
+        rating: reviewForm.rating,
+        comment: reviewForm.comment.trim(),
+      }).unwrap();
 
-      // For now, just show success message
       toast.success("Review submitted successfully!");
       setReviewForm({ rating: 0, comment: "" });
     } catch (error) {
-      toast.error("Failed to submit review");
-    } finally {
-      setIsSubmittingReview(false);
+      const errorMessage =
+        error?.data?.error?.message ||
+        error?.data?.message ||
+        "Failed to submit review";
+      toast.error(errorMessage);
     }
   };
 
@@ -77,15 +51,31 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
     setReviewForm((prev) => ({ ...prev, rating }));
   };
 
-  // Use mock reviews or actual course reviews
-  const reviews = course?.reviews || mockReviews;
+  // Get reviews from API data and filter for current course
+  const allReviews = course?.reviews || [];
+
+  // Helper function to get user initials
+  const getUserInitials = (userData) => {
+    if (!userData) return "U";
+    const firstName = userData.firstName || "";
+    const lastName = userData.lastName || "";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
+
+  // Helper function to get full name
+  const getFullName = (userData) => {
+    if (!userData) return "Anonymous User";
+    const firstName = userData.firstName || "";
+    const lastName = userData.lastName || "";
+    return `${firstName} ${lastName}`.trim() || "Anonymous User";
+  };
 
   return (
     <div className="bg-gray-900 rounded-lg p-4 sm:p-6">
       <div className="flex items-center space-x-2 mb-4 sm:mb-6">
         <MessageSquare className="w-5 h-5 text-blue-400" />
         <h3 className="text-lg sm:text-xl font-semibold">Student Reviews</h3>
-        <span className="text-gray-400 text-sm">({reviews.length})</span>
+        <span className="text-gray-400 text-sm">({allReviews.length})</span>
       </div>
 
       {/* Write Review Form - Only for course owners */}
@@ -94,11 +84,11 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
           <h4 className="text-base font-medium mb-3 !text-[#0055ff]">
             Write a Review
           </h4>
-          <form onSubmit={handleReviewSubmit} className="space-y-3">
+          <form onSubmit={handleReviewSubmit} className="space-y-4">
             {/* Star Rating */}
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-2">
-                Your Rating *
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Rating
               </label>
               <div className="flex items-center space-x-1">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -106,10 +96,10 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
                     key={star}
                     type="button"
                     onClick={() => handleStarClick(star)}
-                    className="focus:outline-none transition-colors p-1"
+                    className="focus:outline-none transition-colors duration-150"
                   >
                     <Star
-                      className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                      className={`w-6 h-6 ${
                         star <= reviewForm.rating
                           ? "text-yellow-400 fill-current"
                           : "text-gray-400 hover:text-yellow-300"
@@ -117,18 +107,16 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
                     />
                   </button>
                 ))}
-                {reviewForm.rating > 0 && (
-                  <span className="ml-2 text-gray-400 text-xs">
-                    {reviewForm.rating} star{reviewForm.rating > 1 ? "s" : ""}
-                  </span>
-                )}
+                <span className="ml-2 text-sm text-gray-400">
+                  {reviewForm.rating > 0 && `${reviewForm.rating}/5`}
+                </span>
               </div>
             </div>
 
-            {/* Comment Textarea */}
+            {/* Comment */}
             <div>
-              <label className="block text-xs font-medium text-gray-300 mb-2">
-                Your Review *
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Your Review
               </label>
               <textarea
                 value={reviewForm.comment}
@@ -139,9 +127,8 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
                   }))
                 }
                 placeholder="Share your experience with this course..."
-                rows={3}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent resize-none"
-                required
+                rows={4}
+                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
             </div>
 
@@ -153,16 +140,16 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
                 !reviewForm.rating ||
                 !reviewForm.comment.trim()
               }
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm py-2 px-4 h-auto"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Send className="w-3 h-3 mr-2" />
+              <Send className="w-4 h-4 mr-2" />
               {isSubmittingReview ? "Submitting..." : "Submit Review"}
             </Button>
           </form>
         </div>
       )}
 
-      {/* Authentication message for non-owners */}
+      {/* Message for non-owners */}
       {isAuthenticated && !isOwned && (
         <div className="mb-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
           <p className="text-gray-400 text-center text-sm">
@@ -174,25 +161,26 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
 
       {/* Reviews List */}
       <div className="space-y-4">
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
+        {allReviews.length > 0 ? (
+          allReviews.map((review, index) => (
             <div
-              key={review.id}
+              key={review._id || index}
               className="border-b border-gray-700 pb-4 last:border-b-0 last:pb-0"
             >
+              {console.log("rrrrrrrr", review)}
               <div className="flex items-start space-x-3">
                 {/* User Avatar */}
                 <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium flex-shrink-0">
-                  {review.user.avatar}
+                  {getUserInitials(review.userData)}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   {/* User Info and Rating */}
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2">
                     <div className="flex-1">
-                      <h5 className="font-medium text-white text-sm">
-                        {review.user.name}
-                      </h5>
+                      <h6 className="font-medium text-white text-sm">
+                        {getFullName(review.userData)}
+                      </h6>
                       <div className="flex items-center space-x-2 mt-1">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
@@ -211,13 +199,12 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
                         </span>
                       </div>
                     </div>
-                    <span className="text-gray-500 text-xs mt-1 sm:mt-0 sm:ml-4 flex-shrink-0">
-                      {new Date(review.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </span>
+                    {/* Review Date */}
+                    {review.createdAt && (
+                      <span className="text-gray-400 text-xs mt-1 sm:mt-0">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
 
                   {/* Review Comment */}
@@ -229,8 +216,8 @@ const WriteReview = ({ isAuthenticated, isOwned, course }) => {
             </div>
           ))
         ) : (
-          <div className="text-center py-6">
-            <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+          <div className="text-center py-8">
+            <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-3" />
             <p className="text-gray-400 text-sm">
               No reviews yet. Be the first to review this course!
             </p>

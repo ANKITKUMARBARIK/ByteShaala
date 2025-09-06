@@ -4,6 +4,9 @@ import ApiResponse from "../utils/ApiResponse.util.js";
 import slugify from "slugify";
 import { uploadOnCloudinary } from "../services/cloudinary.service.js";
 import Course from "../models/course.model.js";
+import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const createCourse = asyncHandler(async (req, res) => {
   // Parse the JSON payload from form-data
@@ -186,13 +189,36 @@ export const getCourseById = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
   const existedCourse = await Course.findOne({ slug });
+
   if (!existedCourse) {
     throw new ApiError(404, "course not found");
   }
 
+  const clonedCourse = JSON.parse(JSON.stringify(existedCourse));
+
+  if (clonedCourse?.reviews?.length) {
+    try {
+      for (let i = 0; i < clonedCourse.reviews.length; i++) {
+        try {
+          const userResponse = await axios.get(
+            `${process.env.USER_SERVICE}/get-user/${clonedCourse.reviews[i].user}`
+          );
+
+          // Add user data to the review object
+          clonedCourse.reviews[i].userData = userResponse.data.data;
+        } catch (userError) {
+          // Keep the review but without user data
+          clonedCourse.reviews[i].userData = null;
+        }
+      }
+    } catch (error) {
+      console.error("Error processing reviews:", error.message);
+    }
+  }
+
   return res
     .status(200)
-    .json(new ApiResponse(200, existedCourse, "course fetched successfully"));
+    .json(new ApiResponse(200, clonedCourse, "course fetched successfully"));
 });
 
 export const getCourseByObjectId = asyncHandler(async (req, res) => {
@@ -259,6 +285,24 @@ export const getAllReviews = asyncHandler(async (req, res) => {
       comment: review.comment,
     }))
   );
+
+  // Fetch user data for each review
+  for (let i = 0; i < allReviews.length; i++) {
+    try {
+      const userResponse = await axios.get(
+        `${process.env.USER_SERVICE}/get-user/${allReviews[i].user}`
+      );
+      // Add user data to the review object
+      allReviews[i].userData = userResponse.data.data;
+    } catch (userError) {
+      console.error(
+        `Error fetching user data for review ${allReviews[i].user}:`,
+        userError.message
+      );
+      // Keep the review but without user data
+      allReviews[i].userData = null;
+    }
+  }
 
   return res
     .status(200)

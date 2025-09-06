@@ -84,7 +84,10 @@ const CourseCard = ({
         <div className="flex-grow">
           <h4 className="text-white font-semibold line-clamp-2">{title}</h4>
           {instructor && (
-            <p className="text-gray-400 text-sm mb-4">{instructor}</p>
+            <p className="text-gray-400 text-sm mb-4">
+              {"Admin"}
+              {/* {instructor} */}
+            </p>
           )}
 
           {/* Pricing - Only show if showPricing is true */}

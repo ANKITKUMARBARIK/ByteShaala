@@ -223,6 +223,17 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, allUsers, "all users fetched successfully"));
 });
 
+export const getUserById = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const existedUser = await User.findOne({ userId });
+  if (!existedUser) throw new ApiError(404, "user not found");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, existedUser, "user fetched successfully"));
+});
+
 export const addPurchaseCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.body;
 

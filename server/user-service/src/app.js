@@ -5,6 +5,7 @@ import { fileSize } from "./constants.js";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import attachUser from "./middlewares/attachUser.middleware.js";
+import { getUserById } from "./controllers/user.controller.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,6 +18,9 @@ app.use(express.urlencoded({ extended: true, limit: fileSize }));
 app.use(express.json({ limit: fileSize }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+// Direct route for inter-service communication (no auth required)
+app.get("/get-user/:userId", getUserById);
 
 // attach req.user from x-user-data header
 app.use(attachUser);

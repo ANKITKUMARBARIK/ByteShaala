@@ -60,6 +60,22 @@ export const courseApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["getCourses", "getCourseById"],
     }),
+
+    // Add review to a course
+    addReview: builder.mutation({
+      query: ({ courseId, rating, comment }) => ({
+        url: `course/add-reviews/${courseId}`,
+        method: "POST",
+        body: { rating, comment },
+      }),
+      invalidatesTags: ["getCourseById", "getAllReviews"],
+    }),
+
+    // Get all reviews
+    getAllReviews: builder.query({
+      query: () => "course/get-all-reviews",
+      providesTags: ["getAllReviews"],
+    }),
   }),
 });
 
@@ -69,4 +85,6 @@ export const {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
+  useAddReviewMutation,
+  useGetAllReviewsQuery,
 } = courseApi;
