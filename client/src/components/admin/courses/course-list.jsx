@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -9,16 +9,26 @@ import CourseCard from "@/components/dashboard/course-card";
 const AdminCourseList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  // Fetch courses from API
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch courses from API with debounced search term
   const {
     data: coursesData,
     isLoading,
     error,
   } = useGetCoursesQuery({
-    search: searchTerm,
+    search: debouncedSearchTerm,
   });
 
   const courses = coursesData?.data || coursesData || [];
@@ -29,7 +39,7 @@ const AdminCourseList = () => {
   // Reset to first page when search changes
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   const handleCourseClick = (course) => {
     navigate(`/admin/courses/${course.slug}`);

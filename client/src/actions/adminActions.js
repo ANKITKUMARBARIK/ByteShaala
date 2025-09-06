@@ -4,7 +4,23 @@ import { baseApi } from "../store/api/baseApi";
 export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllUsers: builder.query({
-      query: () => "user/all-users",
+      query: (filters = {}) => {
+        let queryString = "user/all-users";
+        const params = new URLSearchParams();
+
+        if (filters.search) params.append("search", filters.search);
+        if (filters.role) params.append("role", filters.role);
+        if (filters.status) params.append("status", filters.status);
+        if (filters.page) params.append("page", filters.page);
+        if (filters.limit) params.append("limit", filters.limit);
+
+        const paramsString = params.toString();
+        if (paramsString) {
+          queryString += `?${paramsString}`;
+        }
+
+        return queryString;
+      },
       providesTags: ["getAllUsers"],
     }),
 

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -10,18 +10,28 @@ import CourseCard from "@/components/dashboard/course-card";
 const CourseList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addingCourseId, setAddingCourseId] = useState(null);
   const itemsPerPage = 9;
 
-  // Fetch courses from API
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch courses from API with debounced search term
   const {
     data: coursesData,
     isLoading,
     error,
   } = useGetCoursesQuery({
-    search: searchTerm,
+    search: debouncedSearchTerm,
   });
 
   const courses = coursesData?.data || coursesData || [];
@@ -45,7 +55,7 @@ const CourseList = () => {
   // Reset to first page when search changes
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [debouncedSearchTerm]);
 
   const handleCourseClick = (course) => {
     navigate(`/courses/${course.slug}`);

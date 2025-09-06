@@ -181,7 +181,28 @@ export const deleteUser = asyncHandler(async (req, res) => {
 });
 
 export const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
+  const { search } = req.query;
+
+  // Build search filter
+  let searchFilter = {};
+  if (search && search.trim()) {
+    searchFilter.$or = [
+      {
+        firstName: {
+          $regex: search.trim(),
+          $options: "i", // Case-insensitive search
+        },
+      },
+      {
+        lastName: {
+          $regex: search.trim(),
+          $options: "i", // Case-insensitive search
+        },
+      },
+    ];
+  }
+
+  const users = await User.find(searchFilter);
   if (!users) throw new ApiError(404, "users not found");
   const allUsers = JSON.parse(JSON.stringify(users));
   for (let user of allUsers) {

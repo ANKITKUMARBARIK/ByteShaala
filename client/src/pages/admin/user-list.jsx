@@ -7,7 +7,7 @@ import {
   Shield,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import {
@@ -18,41 +18,37 @@ import {
 const UserListPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const { data: usersData } = useGetAllUsersQuery();
   const [deleteUser] = useDeleteUserMutation();
 
-  //   const {
-  //     data: usersData,
-  //     isLoading,
-  //     error,
-  //   } = useGetAllUsersQuery({
-  //     page: currentPage,
-  //     limit: 10,
-  //     search: searchTerm,
-  //   });
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms delay
 
-  //   const [updateUserStatus] = useUpdateUserStatusMutation();
-  //   const [deleteUser] = useDeleteUserMutation();
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch users from API with debounced search term
+  const { data: usersData } = useGetAllUsersQuery({
+    search: debouncedSearchTerm,
+    role: selectedRole !== "all" ? selectedRole : undefined,
+    status: selectedStatus !== "all" ? selectedStatus : undefined,
+  });
 
   const users = usersData?.data || [];
   const adminCount = users.filter((u) => u.role === "ADMIN").length || 1;
 
   const totalPages = Math.ceil(users.length / 10);
 
-  // Calculate user statistics
-  // const adminUsers = users.filter((u) => u.role === "ADMIN");
-  // const studentUsers = users.filter(
-  //   (u) => u.role === "STUDENT" || u.role !== "ADMIN"
-  // );
-  // const activeUsers = users.filter((u) => u.isActive);
-
-  // Since API might not include admin users, add 1 for current admin if no admins found
-  // const adminCount = adminUsers.length > 0 ? adminUsers.length : 1;
-  // const totalUserCount = users.length + (adminUsers.length > 0 ? 0 : 1); // Add 1 if no admin in response
-  // const activeUserCount = users.length;
+  // Reset to first page when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm, selectedRole, selectedStatus]);
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
@@ -189,7 +185,7 @@ const UserListPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search users by email..."
+              placeholder="Search users by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
