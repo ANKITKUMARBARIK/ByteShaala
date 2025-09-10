@@ -5,9 +5,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import * as yup from "yup";
 
+import {
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+} from "@/actions/authActions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useVerifyOtpMutation } from "@/actions/authActions";
 
 // OTP validation schema
 const otpSchema = yup.object().shape({
@@ -31,6 +34,7 @@ export function OtpUI({ className, ...props }) {
   const [timer, setTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [verifyOtp, { isLoading: verifyOtpLoading }] = useVerifyOtpMutation();
+  const [resendOtp] = useResendOtpMutation();
 
   const inputRefs = useRef([]);
 
@@ -121,14 +125,15 @@ export function OtpUI({ className, ...props }) {
   };
 
   const handleResendOtp = async () => {
+    if (!email) {
+      toast.error("Email not found. Please go back to signup.");
+      return;
+    }
+
     try {
       setResendLoading(true);
 
-      // TODO: Replace with actual resend OTP API call
-      // await resendOtp({ email }).unwrap();
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await resendOtp({ email }).unwrap();
 
       toast.success("OTP sent successfully!");
 
@@ -137,7 +142,9 @@ export function OtpUI({ className, ...props }) {
       setCanResend(false);
     } catch (error) {
       console.error("Resend OTP error:", error);
-      toast.error("Failed to resend OTP. Please try again.");
+      toast.error(
+        error?.data?.message || "Failed to resend OTP. Please try again."
+      );
     } finally {
       setResendLoading(false);
     }
@@ -216,7 +223,7 @@ export function OtpUI({ className, ...props }) {
                   type="button"
                   onClick={handleResendOtp}
                   disabled={resendLoading}
-                  className="text-primary hover:underline font-medium"
+                  className="hover:underline font-medium !bg-transparent !border-none !text-[#0044ff] !px-1"
                 >
                   {resendLoading ? "Sending..." : "Resend OTP"}
                 </button>
