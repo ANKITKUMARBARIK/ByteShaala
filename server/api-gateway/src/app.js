@@ -61,6 +61,7 @@ app.use(
 app.use(
   "/api/v1/course",
   proxy(process.env.COURSE_SERVICE, {
+    limit: "10mb",
     proxyReqPathResolver: (req) => {
       return `/api/v1/course${req.url}`;
     },
