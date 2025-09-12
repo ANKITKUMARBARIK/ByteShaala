@@ -23,6 +23,7 @@ app.use(cookieParser());
 app.use(
   "/api/v1/auth",
   proxy(process.env.AUTH_SERVICE, {
+    limit: "10mb",
     proxyReqPathResolver: (req) => {
       return `/api/v1/auth${req.url}`;
     },
@@ -38,6 +39,7 @@ app.use(
   "/api/v1/user",
   verifyAuthentication,
   proxy(process.env.USER_SERVICE, {
+    limit: "10mb",
     proxyReqPathResolver: (req) => {
       return `/api/v1/user${req.url}`;
     },
@@ -93,6 +95,7 @@ app.use(
   "/api/v1/cart",
   verifyAuthentication,
   proxy(process.env.CART_SERVICE, {
+    limit: "10mb",
     proxyReqPathResolver: (req) => {
       return `/api/v1/cart${req.url}`;
     },
