@@ -70,7 +70,7 @@ const CourseList = () => {
       if (error?.data?.message) {
         toast.error(error.data.message);
       } else {
-        toast.error("Failed to add course to cart");
+        toast.error("course already in cart");
       }
     } finally {
       setAddingCourseId(null);
